@@ -14,7 +14,7 @@ export default class MySQL{
         this.cnn = mysql.createConnection({
             host:'localhost',
             user:'root',
-            password:'',
+            password:'dini108',
             database:'generador',
             port:3306
         });
