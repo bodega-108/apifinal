@@ -16,7 +16,13 @@ export default class MySQL{
             user:'root',
             password:'dini108',
             database:'generador',
-            port:3306
+            port:3306,
+            // host:'18.231.16.7',
+            // user:'emonk',
+            // password:'emonk108',
+            // database:'generador',
+            // port:3306,
+            
         });
         this.conectarDB();
 

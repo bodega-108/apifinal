@@ -11,9 +11,9 @@ class MySQL {
         this.cnn = mysql_1.default.createConnection({
             host: 'localhost',
             user: 'root',
-            password: '',
+            password: 'dini108',
             database: 'generador',
-            port: 3306
+            port: 3306,
         });
         this.conectarDB();
     }
