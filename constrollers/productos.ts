@@ -36,18 +36,17 @@ export const getSku = (req: Request, res: Response) =>{
     }
 
     const query = ` SELECT * FROM producto WHERE ${columna} LIKE "%${sku}%"`;
+    console.log(query);
     MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
 
         if(err){
-            res.status(400).json({
+            res.json({
                 ok:false,
                 mensaje:`No se en resultados para la busqueda ${sku}`
-                
             });
             
             return;
         }
-       
         res.json({
             ok:true,
             producto
@@ -128,4 +127,34 @@ export const saveProductos = (req:Request, res: Response)=>{
 //             ok:true,
 //             skus
 //          });
+}
+export const update = (req: Request, res: Response)=>{
+    let id = req.body.id;
+    let sku = req.body.sku;
+    let nombre = req.body.nombre;
+    let cliente = req.body.cliente;
+    let categoria = req.body.categoria;
+    let precio = req.body.precio;
+    let kam = req.body.kam;
+
+    let query = ` UPDATE producto SET sku="${sku}", nombre ="${nombre}", id_categoria ="${categoria}", precio ="${precio}", id_cliente ="${cliente}",id_kam ="${kam}" WHERE id ="${id}";`
+
+    console.log(query);
+
+    MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
+
+        if(err){
+            res.json({
+                ok:false,
+                mensaje:`No se en resultados para la busqueda ${sku}`
+            });
+            
+            return;
+        }
+        res.json({
+            ok:true,
+            producto
+        });
+
+    });
 }

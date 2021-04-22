@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveProductos = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
+exports.update = exports.saveProductos = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
 const conexion_1 = __importDefault(require("../db/conexion"));
 exports.getProductos = (req, res) => {
     const query = ` SELECT * FROM producto`;
@@ -31,9 +31,10 @@ exports.getSku = (req, res) => {
         columna = 'sku';
     }
     const query = ` SELECT * FROM producto WHERE ${columna} LIKE "%${sku}%"`;
+    console.log(query);
     conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
         if (err) {
-            res.status(400).json({
+            res.json({
                 ok: false,
                 mensaje: `No se en resultados para la busqueda ${sku}`
             });
@@ -96,5 +97,29 @@ exports.saveProductos = (req, res) => {
     //             ok:true,
     //             skus
     //          });
+};
+exports.update = (req, res) => {
+    let id = req.body.id;
+    let sku = req.body.sku;
+    let nombre = req.body.nombre;
+    let cliente = req.body.cliente;
+    let categoria = req.body.categoria;
+    let precio = req.body.precio;
+    let kam = req.body.kam;
+    let query = ` UPDATE producto SET sku="${sku}", nombre ="${nombre}", id_categoria ="${categoria}", precio ="${precio}", id_cliente ="${cliente}",id_kam ="${kam}" WHERE id ="${id}";`;
+    console.log(query);
+    conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
+        if (err) {
+            res.json({
+                ok: false,
+                mensaje: `No se en resultados para la busqueda ${sku}`
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            producto
+        });
+    });
 };
 //# sourceMappingURL=productos.js.map

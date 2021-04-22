@@ -7,5 +7,6 @@ router.get('/', productos_1.getProductos);
 router.get('/:sku', productos_1.getSku);
 router.get('/categoria/:categoria', productos_1.getProductoCat);
 router.post('/save', productos_1.saveProductos);
+router.post('/update', productos_1.update);
 exports.default = router;
 //# sourceMappingURL=producto.js.map

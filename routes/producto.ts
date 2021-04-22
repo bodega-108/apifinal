@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getProductos, getSku, getProductoCat, saveProductos } from '../constrollers/productos';
+import { getProductos, getSku, getProductoCat, saveProductos, update } from '../constrollers/productos';
 
 const router =  Router();
 
@@ -11,4 +11,5 @@ router.get('/categoria/:categoria',getProductoCat);
 
 router.post('/save',saveProductos);
 
+router.post('/update',update);
 export default router;
