@@ -44,7 +44,6 @@ export const getSku = (req: Request, res: Response) =>{
                 ok:false,
                 mensaje:`No se en resultados para la busqueda ${sku}`
             });
-            
             return;
         }
         res.json({
@@ -64,7 +63,7 @@ export const getProductoCat = (req: Request, res: Response)=>{
     MySQL.ejecutarQuery( query,[],(err:any,productos:Object[])=>{
 
         if(err){
-            res.status(400).json({
+            res.json({
                 ok:false,
                 mensaje:`No se en resultados para la busqueda`
                 
@@ -72,6 +71,31 @@ export const getProductoCat = (req: Request, res: Response)=>{
             
             return;
         }
+        res.json({
+            ok:true,
+            productos
+        });
+    });
+}
+export const getSkusCat = (req: Request, res: Response)=>{
+    let id = req.params.categoria;
+
+    //const query = ` SELECT p.nombre, p.sku FROM producto p INNER JOIN categoria c ON p.id_categoria = c.id WHERE c.identificador_ctg=${id}`;
+    const query = ` SELECT p.sku FROM producto p INNER JOIN categoria c ON p.id_categoria = c.id WHERE c.id=${id}`;
+
+    console.log(query);
+    MySQL.ejecutarQuery( query,[],(err:any,productos:Object[])=>{
+
+        if(err){
+            res.json({
+                ok:false,
+                mensaje:`No se en resultados para la busqueda`
+                
+            });
+            
+            return;
+        }
+        
         res.json({
             ok:true,
             productos
@@ -157,4 +181,169 @@ export const update = (req: Request, res: Response)=>{
         });
 
     });
+}
+export const getCategoria = (req: Request, res: Response)=>{
+    
+    const query = `SELECT * FROM categoria;` 
+    
+    MySQL.ejecutarQuery( query,[],(err:any,categoria:Object[])=>{
+        
+        if(err){
+            res.json({
+                ok:false,
+                mensaje:`No se en resultados para la busqueda`
+            });
+            return;
+        }
+        res.json({
+            ok:true,
+            categoria
+        });
+    });
+}
+
+export const getCliente = (req: Request, res: Response)=>{
+
+    const query = `SELECT * FROM cliente`;
+
+    MySQL.ejecutarQuery( query,[],(err:any,clientes:Object[])=>{
+        if(err){
+            res.json({
+                ok:false,
+                message:"No se encontraron los resultados"
+
+            });
+
+            return;
+           
+        }
+        res.json({
+            ok:true,
+            clientes
+        });
+    });
+}
+export const getKams = (req: Request, res: Response)=>{
+
+    const query = `SELECT * FROM kam`;
+
+    MySQL.ejecutarQuery( query,[],(err:any,kams:Object[])=>{
+        if(err){
+            res.json({
+                ok:false,
+                message:"No se encontraron los resultados"
+
+            });
+
+            return;
+           
+        }
+        res.json({
+            ok:true,
+            kams
+        });
+    });
+}
+export const getIdentificadorCtg = (req: Request, res: Response)=>{
+
+    const id_ctg = req.params.id;
+
+    const query = `SELECT identificador_ctg FROM categoria WHERE id="${id_ctg}"`;
+    console.log(query);
+    
+    MySQL.ejecutarQuery( query,[],(err:any,identificador:Object[])=>{
+        if(err) {
+            res.json({
+                ok:false,
+                message:"No se han encontrado registros"
+            });
+            return;
+        }
+        res.json({
+            ok:true,
+            identificador
+        });
+    });
+}
+export const postCategoria = (req:Request, res: Response)=>{
+    
+    const nombre = req.body.nombre;
+    const identificador = req.body.identificadorCtg;
+
+    const query = ` INSERT INTO categoria (nombre, identificador_ctg) VALUES ("${nombre}", ${identificador})`;
+
+    MySQL.ejecutarQuery( query,[],(err:any,categoria:Object[])=>{
+        if(err) {
+            res.json({
+                ok:false,
+                mensaje:`Ha ocurrido un error`
+            });
+
+            return;
+        }
+        res.json({
+            ok:true,
+            mensaje:"Registro existoso"
+        });
+    });
+}
+export const postCliente = (req: Request, res: Response)=>{
+    
+    const nombre = req.body.nombre;
+    const  id_kam = req.body.id_kam;
+
+    const query = `INSERT INTO cliente(nombre, id_kam) VALUES("${nombre}",${id_kam})`;
+
+    MySQL.ejecutarQuery( query,[],(err:any,cliente:Object[])=>{
+        if(err) {
+            res.json({
+                ok:false,
+                mensaje:"Lo sentimos, ha ocurrido un erro"
+            });
+            return;
+        }
+        res.json({
+            ok:true,
+            mensaje:"Registro existoso"
+        });
+    })
+}
+export const postKam = (req: Request, res: Response)=>{
+    
+    const nombre = req.body.nombre;
+    const  apellido = req.body.apellido;
+
+    const query = `INSERT INTO kam(nombre, apellido) VALUES("${nombre}","${apellido}")`;
+
+    MySQL.ejecutarQuery( query,[],(err:any,cliente:Object[])=>{
+        if(err) {
+            res.json({
+                ok:false,
+                mensaje:"Lo sentimos, ha ocurrido un erro"
+            });
+            return;
+        }
+        res.json({
+            ok:true,
+            mensaje:"Registro existoso"
+        });
+    })
+}
+export const getAllIdentificador = (req: Request, res: Response)=>{
+    
+   const query = `SELECT identificador_ctg FROM categoria`;
+
+   MySQL.ejecutarQuery( query,[],(err:any,identificadores:Object[])=>{
+       if(err) {
+           res.json({
+               ok:false,
+               mensaje:"Error al guardar"
+           });
+           return;
+       }
+       res.json({
+           ok:true,
+           identificadores
+       });
+   })
 }

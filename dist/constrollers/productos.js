@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update = exports.saveProductos = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
+exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
 const conexion_1 = __importDefault(require("../db/conexion"));
 exports.getProductos = (req, res) => {
     const query = ` SELECT * FROM producto`;
@@ -53,7 +53,26 @@ exports.getProductoCat = (req, res) => {
     console.log(query);
     conexion_1.default.ejecutarQuery(query, [], (err, productos) => {
         if (err) {
-            res.status(400).json({
+            res.json({
+                ok: false,
+                mensaje: `No se en resultados para la busqueda`
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            productos
+        });
+    });
+};
+exports.getSkusCat = (req, res) => {
+    let id = req.params.categoria;
+    //const query = ` SELECT p.nombre, p.sku FROM producto p INNER JOIN categoria c ON p.id_categoria = c.id WHERE c.identificador_ctg=${id}`;
+    const query = ` SELECT p.sku FROM producto p INNER JOIN categoria c ON p.id_categoria = c.id WHERE c.id=${id}`;
+    console.log(query);
+    conexion_1.default.ejecutarQuery(query, [], (err, productos) => {
+        if (err) {
+            res.json({
                 ok: false,
                 mensaje: `No se en resultados para la busqueda`
             });
@@ -119,6 +138,142 @@ exports.update = (req, res) => {
         res.json({
             ok: true,
             producto
+        });
+    });
+};
+exports.getCategoria = (req, res) => {
+    const query = `SELECT * FROM categoria;`;
+    conexion_1.default.ejecutarQuery(query, [], (err, categoria) => {
+        if (err) {
+            res.json({
+                ok: false,
+                mensaje: `No se en resultados para la busqueda`
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            categoria
+        });
+    });
+};
+exports.getCliente = (req, res) => {
+    const query = `SELECT * FROM cliente`;
+    conexion_1.default.ejecutarQuery(query, [], (err, clientes) => {
+        if (err) {
+            res.json({
+                ok: false,
+                message: "No se encontraron los resultados"
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            clientes
+        });
+    });
+};
+exports.getKams = (req, res) => {
+    const query = `SELECT * FROM kam`;
+    conexion_1.default.ejecutarQuery(query, [], (err, kams) => {
+        if (err) {
+            res.json({
+                ok: false,
+                message: "No se encontraron los resultados"
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            kams
+        });
+    });
+};
+exports.getIdentificadorCtg = (req, res) => {
+    const id_ctg = req.params.id;
+    const query = `SELECT identificador_ctg FROM categoria WHERE id="${id_ctg}"`;
+    console.log(query);
+    conexion_1.default.ejecutarQuery(query, [], (err, identificador) => {
+        if (err) {
+            res.json({
+                ok: false,
+                message: "No se han encontrado registros"
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            identificador
+        });
+    });
+};
+exports.postCategoria = (req, res) => {
+    const nombre = req.body.nombre;
+    const identificador = req.body.identificadorCtg;
+    const query = ` INSERT INTO categoria (nombre, identificador_ctg) VALUES ("${nombre}", ${identificador})`;
+    conexion_1.default.ejecutarQuery(query, [], (err, categoria) => {
+        if (err) {
+            res.json({
+                ok: false,
+                mensaje: `Ha ocurrido un error`
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            mensaje: "Registro existoso"
+        });
+    });
+};
+exports.postCliente = (req, res) => {
+    const nombre = req.body.nombre;
+    const id_kam = req.body.id_kam;
+    const query = `INSERT INTO cliente(nombre, id_kam) VALUES("${nombre}",${id_kam})`;
+    conexion_1.default.ejecutarQuery(query, [], (err, cliente) => {
+        if (err) {
+            res.json({
+                ok: false,
+                mensaje: "Lo sentimos, ha ocurrido un erro"
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            mensaje: "Registro existoso"
+        });
+    });
+};
+exports.postKam = (req, res) => {
+    const nombre = req.body.nombre;
+    const apellido = req.body.apellido;
+    const query = `INSERT INTO kam(nombre, apellido) VALUES("${nombre}","${apellido}")`;
+    conexion_1.default.ejecutarQuery(query, [], (err, cliente) => {
+        if (err) {
+            res.json({
+                ok: false,
+                mensaje: "Lo sentimos, ha ocurrido un erro"
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            mensaje: "Registro existoso"
+        });
+    });
+};
+exports.getAllIdentificador = (req, res) => {
+    const query = `SELECT identificador_ctg FROM categoria`;
+    conexion_1.default.ejecutarQuery(query, [], (err, identificadores) => {
+        if (err) {
+            res.json({
+                ok: false,
+                mensaje: "Error al guardar"
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            identificadores
         });
     });
 };

@@ -9,15 +9,9 @@ class MySQL {
         this.conectado = false;
         console.log('Clases inicializa');
         this.cnn = mysql_1.default.createConnection({
-            // host:'localhost',
-            // user:'root',
-            // password:'',
-            // database:'generador',
-            // port:3306,
-            //
-            host: '18.231.16.7',
-            user: 'eduardo',
-            password: 'dini108',
+            host: 'localhost',
+            user: 'root',
+            password: '',
             database: 'generador',
             port: 3306,
         });
