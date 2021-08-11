@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
+exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
 const conexion_1 = __importDefault(require("../db/conexion"));
 exports.getProductos = (req, res) => {
     const query = ` SELECT * FROM producto`;
@@ -93,10 +93,10 @@ exports.saveProductos = (req, res) => {
     let cadenas = [];
     for (let i = 0; i < skus.length; i++) {
         contador++;
-        cadena = `("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam})`;
+        cadena = `("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam},"${skus[i].codigo_sherpa}")`;
         cadenas.push(cadena);
     }
-    query = ` INSERT INTO producto (sku, estado, nombre, id_categoria, precio, id_cliente, id_kam) VALUES ${cadenas.toString()}`;
+    query = ` INSERT INTO producto (sku, estado, nombre, id_categoria, precio, id_cliente, id_kam, codigo_sherpa) VALUES ${cadenas.toString()}`;
     console.log(query);
     console.log(skus);
     conexion_1.default.ejecutarQuery(query, [], (err, productos) => {
@@ -274,6 +274,56 @@ exports.getAllIdentificador = (req, res) => {
         res.json({
             ok: true,
             identificadores
+        });
+    });
+};
+exports.deleteProducto = (req, res) => {
+    let id = req.params.id;
+    const query = `DELETE FROM producto WHERE id=${id}`;
+    conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
+        if (err) {
+            res.status(400).json({
+                ok: false
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            producto
+        });
+    });
+};
+exports.getProducto = (req, res) => {
+    let id = req.params.id;
+    const query = `SELECT * FROM producto WHERE id=${id}`;
+    conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
+        if (err) {
+            res.status(400).json({
+                ok: false
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            producto
+        });
+    });
+};
+exports.editarProducto = (req, res) => {
+    console.log(req.body);
+    const { nombre, status, codigo_sherpa, precio, cliente, kam, material, medidas_producto, peso_producto, cdp, capacidad, packing_venta, medidas_ctn, peso_ctn, brandeado, formato_venta, codigo_isp, codigo_cliente, id } = req.body;
+    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}" WHERE id = ${id}`;
+    console.log(query);
+    conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
+        if (err) {
+            res.status(400).json({
+                ok: false
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            producto
         });
     });
 };

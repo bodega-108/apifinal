@@ -119,14 +119,14 @@ export const saveProductos = (req:Request, res: Response)=>{
 
         
        
-      cadena =`("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam})` ;
+      cadena =`("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam},"${skus[i].codigo_sherpa}")` ;
     
         cadenas.push(cadena); 
     
     }
    
 
-    query = ` INSERT INTO producto (sku, estado, nombre, id_categoria, precio, id_cliente, id_kam) VALUES ${cadenas.toString()}`;
+    query = ` INSERT INTO producto (sku, estado, nombre, id_categoria, precio, id_cliente, id_kam, codigo_sherpa) VALUES ${cadenas.toString()}`;
      console.log(query);
     console.log(skus);
 
@@ -346,4 +346,72 @@ export const getAllIdentificador = (req: Request, res: Response)=>{
            identificadores
        });
    })
+}
+
+export const deleteProducto = (req:Request, res:Response)=>{
+    let id = req.params.id;
+    
+    const query = `DELETE FROM producto WHERE id=${id}`;
+
+    MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
+        
+        if(err){
+            res.status(400).json({
+                ok:false
+            });
+            return;
+        }
+
+        res.json({
+            ok:true,
+            producto
+        });
+    })
+}
+
+export const getProducto = (req:Request, res:Response) =>{
+    let id = req.params.id;
+    const query = `SELECT * FROM producto WHERE id=${id}`;
+
+    MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
+        
+        if(err){
+            res.status(400).json({
+                ok:false
+            });
+            return;
+        }
+
+        res.json({
+            ok:true,
+            producto
+        });
+    });
+
+}
+
+export const editarProducto = (req: Request, res: Response) => {
+    console.log(req.body);
+    const {nombre,status,codigo_sherpa,precio,cliente,kam,material,medidas_producto,peso_producto,cdp,capacidad,packing_venta,medidas_ctn,peso_ctn,brandeado,formato_venta,codigo_isp,codigo_cliente,id} = req.body;
+    
+    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}" WHERE id = ${id}`;
+    console.log(query);
+
+    MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
+        
+        if(err){
+            res.status(400).json({
+                ok:false
+            });
+            return;
+        }
+
+        res.json({
+            ok:true,
+            producto
+        });
+
+    } );
+
+   
 }

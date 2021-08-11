@@ -12,7 +12,10 @@ import { getProductos,
          postCliente,
          postKam,
          getAllIdentificador,
-         getSkusCat} from '../constrollers/productos';
+         getSkusCat,
+         deleteProducto,
+        getProducto,
+        editarProducto} from '../constrollers/productos';
 
 const router =  Router();
 router.get('/skus/:categoria',getSkusCat);
@@ -43,4 +46,9 @@ router.post('/save-kams',postKam);
 
 router.get('/identificadores',getAllIdentificador);
 
+router.get('/eliminar/:id',deleteProducto);
+
+router.get('/producto/:id',getProducto);
+
+router.post('/editar',editarProducto);
 export default router;

@@ -17,5 +17,8 @@ router.post('/save-categoria', productos_1.postCategoria);
 router.post('/save-cliente', productos_1.postCliente);
 router.post('/save-kams', productos_1.postKam);
 router.get('/identificadores', productos_1.getAllIdentificador);
+router.get('/eliminar/:id', productos_1.deleteProducto);
+router.get('/producto/:id', productos_1.getProducto);
+router.post('/editar', productos_1.editarProducto);
 exports.default = router;
 //# sourceMappingURL=producto.js.map
