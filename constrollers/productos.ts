@@ -1,5 +1,10 @@
 import {Request,Response} from 'express';
+import multer from 'multer';
+import  Multer  from 'multer';
 import MySQL from '../db/conexion';
+import path from 'path';
+import fs from "fs";
+import { ImagenSku } from '../interfaces/sku.interfaces';
 
 export const getProductos = (req: Request, res: Response) =>{
     
@@ -390,11 +395,14 @@ export const getProducto = (req:Request, res:Response) =>{
 
 }
 
-export const editarProducto = (req: Request, res: Response) => {
-    console.log(req.body);
-    const {nombre,status,codigo_sherpa,precio,cliente,kam,material,medidas_producto,peso_producto,cdp,capacidad,packing_venta,medidas_ctn,peso_ctn,brandeado,formato_venta,codigo_isp,codigo_cliente,id} = req.body;
+export const editarProducto = async (req: Request, res: Response) => {
+    // console.log(req.body);
+
+   
+
+    const {nombre,status,codigo_sherpa,precio,cliente,kam,material,medidas_producto,peso_producto,cdp,capacidad,packing_venta,medidas_ctn,peso_ctn,brandeado,formato_venta,codigo_isp,codigo_cliente,id,erp,short_description} = req.body;
     
-    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}" WHERE id = ${id}`;
+    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}" WHERE id = ${id}`;
     console.log(query);
 
     MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
@@ -405,7 +413,8 @@ export const editarProducto = (req: Request, res: Response) => {
             });
             return;
         }
-
+   
+        
         res.json({
             ok:true,
             producto
@@ -415,3 +424,80 @@ export const editarProducto = (req: Request, res: Response) => {
 
    
 }
+export const subirImagenes = (req: Request, res: Response)=>{
+
+   
+    res.json({
+        ok:true
+    });
+
+    upload
+}
+
+const storage = Multer.diskStorage({
+    
+    destination: function (req, file, cb){
+       
+        cb(null, 'uploads')
+    },
+    filename: function (req, file, cb){
+       
+        cb(null, `${file.originalname}`)
+       
+    }
+});
+
+export const upload = multer({ storage: storage});
+ 
+// upload.single('myfile');
+
+export const listaDeImagenes = async(req: Request, res: Response)=>{
+    const id = req.params.id;
+    const query = `SELECT i.nombre, i.id FROM imagenes_sku i INNER JOIN producto p ON i.id_sku = p.id WHERE p.id=${id};`;
+    
+    let foto = {
+            "id":"",
+            "url":""
+        };
+    let listaFotos :any[]= [];
+
+    MySQL.ejecutarQuery( query,[],(err:any,producto:any[]) => {
+         console.log(producto); 
+        if(err){
+            res.status(400).json({
+                ok:false
+            });
+            return;
+        }
+
+       res.json({
+           ok:true,
+            producto,
+             
+       });
+    } );
+}
+
+export const exponerImg = async(req: Request, res: Response)=>{
+    
+    const sku = req.params.sku;
+    console.log(sku);
+    const query = `SELECT i.nombre FROM imagenes_sku i INNER JOIN producto p ON i.id_sku = p.id WHERE i.nombre="${sku}";`
+
+    let foto= "";
+    
+    console.log(query);
+   MySQL.ejecutarQuery( query,[],(err:any,producto:any) => {
+        // console.log(producto[0].nombre); 
+        if(err){
+            res.status(400).json({
+                ok:false
+            });
+            return;
+        }  
+          foto = path.join(__dirname,'../../uploads/',producto[0].nombre); 
+          res.sendFile(foto);
+
+    } );
+} 
+

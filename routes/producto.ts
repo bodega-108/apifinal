@@ -15,7 +15,11 @@ import { getProductos,
          getSkusCat,
          deleteProducto,
         getProducto,
-        editarProducto} from '../constrollers/productos';
+        editarProducto,
+        subirImagenes,
+        upload,
+        exponerImg,
+        listaDeImagenes} from '../constrollers/productos';
 
 const router =  Router();
 router.get('/skus/:categoria',getSkusCat);
@@ -50,5 +54,11 @@ router.get('/eliminar/:id',deleteProducto);
 
 router.get('/producto/:id',getProducto);
 
-router.post('/editar',editarProducto);
+router.post('/editar',upload.array('imagenes',10),editarProducto);
+
+router.post('/subirimagenes',subirImagenes,upload.array('imagenes',10));
+
+router.get('/imagenes/:id',listaDeImagenes);
+
+router.get('/img/:sku',exponerImg);
 export default router;

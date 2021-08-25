@@ -1,10 +1,22 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
+exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
+const multer_1 = __importDefault(require("multer"));
+const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
+const path_1 = __importDefault(require("path"));
 exports.getProductos = (req, res) => {
     const query = ` SELECT * FROM producto`;
     conexion_1.default.ejecutarQuery(query, [], (err, productos) => {
@@ -309,10 +321,10 @@ exports.getProducto = (req, res) => {
         });
     });
 };
-exports.editarProducto = (req, res) => {
-    console.log(req.body);
-    const { nombre, status, codigo_sherpa, precio, cliente, kam, material, medidas_producto, peso_producto, cdp, capacidad, packing_venta, medidas_ctn, peso_ctn, brandeado, formato_venta, codigo_isp, codigo_cliente, id } = req.body;
-    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}" WHERE id = ${id}`;
+exports.editarProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // console.log(req.body);
+    const { nombre, status, codigo_sherpa, precio, cliente, kam, material, medidas_producto, peso_producto, cdp, capacidad, packing_venta, medidas_ctn, peso_ctn, brandeado, formato_venta, codigo_isp, codigo_cliente, id, erp, short_description } = req.body;
+    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}" WHERE id = ${id}`;
     console.log(query);
     conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
         if (err) {
@@ -326,5 +338,61 @@ exports.editarProducto = (req, res) => {
             producto
         });
     });
+});
+exports.subirImagenes = (req, res) => {
+    res.json({
+        ok: true
+    });
+    exports.upload;
 };
+const storage = multer_2.default.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${file.originalname}`);
+    }
+});
+exports.upload = multer_1.default({ storage: storage });
+// upload.single('myfile');
+exports.listaDeImagenes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const query = `SELECT i.nombre, i.id FROM imagenes_sku i INNER JOIN producto p ON i.id_sku = p.id WHERE p.id=${id};`;
+    let foto = {
+        "id": "",
+        "url": ""
+    };
+    let listaFotos = [];
+    conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
+        console.log(producto);
+        if (err) {
+            res.status(400).json({
+                ok: false
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            producto,
+        });
+    });
+});
+exports.exponerImg = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const sku = req.params.sku;
+    console.log(sku);
+    const query = `SELECT i.nombre FROM imagenes_sku i INNER JOIN producto p ON i.id_sku = p.id WHERE i.nombre="${sku}";`;
+    let foto = "";
+    console.log(query);
+    conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
+        // console.log(producto[0].nombre); 
+        if (err) {
+            res.status(400).json({
+                ok: false
+            });
+            return;
+        }
+        foto = path_1.default.join(__dirname, '../../uploads/', producto[0].nombre);
+        res.sendFile(foto);
+    });
+});
 //# sourceMappingURL=productos.js.map
