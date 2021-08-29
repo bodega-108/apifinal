@@ -23,5 +23,6 @@ router.post('/editar', productos_1.upload.array('imagenes', 10), productos_1.edi
 router.post('/subirimagenes', productos_1.subirImagenes, productos_1.upload.array('imagenes', 10));
 router.get('/imagenes/:id', productos_1.listaDeImagenes);
 router.get('/img/:sku', productos_1.exponerImg);
+router.post('/save-img', productos_1.saveDataImg);
 exports.default = router;
 //# sourceMappingURL=producto.js.map

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
+exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
@@ -124,10 +124,6 @@ exports.saveProductos = (req, res) => {
             productos
         });
     });
-    // res.json({
-    //             ok:true,
-    //             skus
-    //          });
 };
 exports.update = (req, res) => {
     let id = req.body.id;
@@ -323,9 +319,10 @@ exports.getProducto = (req, res) => {
 };
 exports.editarProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log(req.body);
+    //    console.log(req.body);
     const { nombre, status, codigo_sherpa, precio, cliente, kam, material, medidas_producto, peso_producto, cdp, capacidad, packing_venta, medidas_ctn, peso_ctn, brandeado, formato_venta, codigo_isp, codigo_cliente, id, erp, short_description } = req.body;
     const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}" WHERE id = ${id}`;
-    console.log(query);
+    // console.log(query);
     conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
         if (err) {
             res.status(400).json({
@@ -358,6 +355,7 @@ exports.upload = multer_1.default({ storage: storage });
 exports.listaDeImagenes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const query = `SELECT i.nombre, i.id FROM imagenes_sku i INNER JOIN producto p ON i.id_sku = p.id WHERE p.id=${id};`;
+    console.log(query);
     let foto = {
         "id": "",
         "url": ""
@@ -367,7 +365,8 @@ exports.listaDeImagenes = (req, res) => __awaiter(void 0, void 0, void 0, functi
         console.log(producto);
         if (err) {
             res.status(400).json({
-                ok: false
+                ok: false,
+                image: "no-image.jpg"
             });
             return;
         }
@@ -393,6 +392,34 @@ exports.exponerImg = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
         foto = path_1.default.join(__dirname, '../../uploads/', producto[0].nombre);
         res.sendFile(foto);
+    });
+});
+exports.saveDataImg = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const listaImagenes = req.body;
+    let contador = 0;
+    console.log(req.body);
+    let query;
+    let cadena;
+    let cadenas = [];
+    for (let i = 0; i < listaImagenes.length; i++) {
+        contador++;
+        cadena = `("${listaImagenes[i].nombre}","${listaImagenes[i].id_sku}")`;
+        cadenas.push(cadena);
+    }
+    console.log(cadena);
+    query = `INSERT INTO imagenes_sku (nombre,id_sku) VALUES  ${cadenas.toString()}`;
+    //  return res.json(query);
+    conexion_1.default.ejecutarQuery(query, [], (err, imagenes_sku) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                message: `ha ocurrido un error al intentar guardar`,
+            });
+        }
+        res.json({
+            ok: true,
+            message: 'Registro exitoso',
+        });
     });
 });
 //# sourceMappingURL=productos.js.map

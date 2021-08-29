@@ -19,7 +19,8 @@ import { getProductos,
         subirImagenes,
         upload,
         exponerImg,
-        listaDeImagenes} from '../constrollers/productos';
+        listaDeImagenes,
+        saveDataImg} from '../constrollers/productos';
 
 const router =  Router();
 router.get('/skus/:categoria',getSkusCat);
@@ -61,4 +62,7 @@ router.post('/subirimagenes',subirImagenes,upload.array('imagenes',10));
 router.get('/imagenes/:id',listaDeImagenes);
 
 router.get('/img/:sku',exponerImg);
+
+router.post('/save-img',saveDataImg);
+
 export default router;

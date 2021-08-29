@@ -3,8 +3,7 @@ import multer from 'multer';
 import  Multer  from 'multer';
 import MySQL from '../db/conexion';
 import path from 'path';
-import fs from "fs";
-import { ImagenSku } from '../interfaces/sku.interfaces';
+
 
 export const getProductos = (req: Request, res: Response) =>{
     
@@ -109,32 +108,24 @@ export const getSkusCat = (req: Request, res: Response)=>{
 }
 
 export const saveProductos = (req:Request, res: Response)=>{
+    
     const skus = req.body;
-
-
     let contador = 0;
     //let query = "INSERT INTO productos (sku, estado, nombre, id_categoria, precio, id_cliente, id_kam) VALUES ?";
-
     let query ;
      let cadena;
      let cadenas=[];
             
      for(let i = 0; i < skus.length; i++) {
-         contador++;
-
-        
-       
-      cadena =`("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam},"${skus[i].codigo_sherpa}")` ;
-    
-        cadenas.push(cadena); 
+         contador++;   
+         cadena =`("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam},"${skus[i].codigo_sherpa}")`;
+         cadenas.push(cadena); 
     
     }
-   
 
     query = ` INSERT INTO producto (sku, estado, nombre, id_categoria, precio, id_cliente, id_kam, codigo_sherpa) VALUES ${cadenas.toString()}`;
-     console.log(query);
+    console.log(query);
     console.log(skus);
-
 
    MySQL.ejecutarQuery( query,[],(err:any,productos:Object[])=>{
 
@@ -152,10 +143,6 @@ export const saveProductos = (req:Request, res: Response)=>{
     });
  });
 
-// res.json({
-//             ok:true,
-//             skus
-//          });
 }
 export const update = (req: Request, res: Response)=>{
     let id = req.body.id;
@@ -398,12 +385,12 @@ export const getProducto = (req:Request, res:Response) =>{
 export const editarProducto = async (req: Request, res: Response) => {
     // console.log(req.body);
 
-   
+//    console.log(req.body);
 
     const {nombre,status,codigo_sherpa,precio,cliente,kam,material,medidas_producto,peso_producto,cdp,capacidad,packing_venta,medidas_ctn,peso_ctn,brandeado,formato_venta,codigo_isp,codigo_cliente,id,erp,short_description} = req.body;
     
     const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}" WHERE id = ${id}`;
-    console.log(query);
+    // console.log(query);
 
     MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
         
@@ -454,7 +441,7 @@ export const upload = multer({ storage: storage});
 export const listaDeImagenes = async(req: Request, res: Response)=>{
     const id = req.params.id;
     const query = `SELECT i.nombre, i.id FROM imagenes_sku i INNER JOIN producto p ON i.id_sku = p.id WHERE p.id=${id};`;
-    
+    console.log(query);
     let foto = {
             "id":"",
             "url":""
@@ -465,9 +452,11 @@ export const listaDeImagenes = async(req: Request, res: Response)=>{
          console.log(producto); 
         if(err){
             res.status(400).json({
-                ok:false
+                ok:false,
+                image:"no-image.jpg"
             });
-            return;
+            return
+            
         }
 
        res.json({
@@ -501,3 +490,37 @@ export const exponerImg = async(req: Request, res: Response)=>{
     } );
 } 
 
+export const saveDataImg = async (req: Request, res: Response) => {
+    const listaImagenes = req.body;
+    let contador = 0;
+     console.log(req.body);
+   
+     let query ;
+     let cadena;
+     let cadenas=[];
+            
+      for(let i = 0; i < listaImagenes.length; i++) {
+          contador++;   
+          cadena =`("${listaImagenes[i].nombre}","${listaImagenes[i].id_sku}")`;
+          cadenas.push(cadena); 
+    
+     }
+
+     console.log(cadena);
+
+      query = `INSERT INTO imagenes_sku (nombre,id_sku) VALUES  ${cadenas.toString()}`;
+    //  return res.json(query);
+    MySQL.ejecutarQuery( query,[],(err:any,imagenes_sku:Object[])=>{
+        if(err) {
+           return res.status(400).json({
+                ok:false,
+                message:`ha ocurrido un error al intentar guardar`,
+            });
+        }
+
+        res.json({
+            ok:true,
+            message:'Registro exitoso',
+        });
+    });
+}
