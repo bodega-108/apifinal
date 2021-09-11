@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
+exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
 const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 exports.getProductos = (req, res) => {
     const query = ` SELECT * FROM producto`;
     conexion_1.default.ejecutarQuery(query, [], (err, productos) => {
@@ -319,7 +320,6 @@ exports.getProducto = (req, res) => {
 };
 exports.editarProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log(req.body);
-    //    console.log(req.body);
     const { nombre, status, codigo_sherpa, precio, cliente, kam, material, medidas_producto, peso_producto, cdp, capacidad, packing_venta, medidas_ctn, peso_ctn, brandeado, formato_venta, codigo_isp, codigo_cliente, id, erp, short_description } = req.body;
     const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}" WHERE id = ${id}`;
     // console.log(query);
@@ -421,5 +421,35 @@ exports.saveDataImg = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             message: 'Registro exitoso',
         });
     });
+});
+exports.eliminarImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = req.params.id;
+    let nombre = req.params.nombre;
+    try {
+        const pathImage = path_1.default.join(__dirname, '../../uploads/', nombre);
+        console.log(pathImage);
+        fs_1.default.unlinkSync(pathImage);
+        const query = `DELETE FROM imagenes_sku WHERE id=${id}`;
+        conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
+            if (err) {
+                res.status(400).json({
+                    ok: false
+                });
+                return;
+            }
+            res.json({
+                ok: true,
+                mensaje: "registro eliminado"
+            });
+        });
+        //file removed
+    }
+    catch (err) {
+        console.error(err);
+        res.json({
+            ok: false,
+            mensaje: "ha ocurrido un error al eliminar el archivo"
+        });
+    }
 });
 //# sourceMappingURL=productos.js.map

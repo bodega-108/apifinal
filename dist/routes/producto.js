@@ -24,5 +24,6 @@ router.post('/subirimagenes', productos_1.subirImagenes, productos_1.upload.arra
 router.get('/imagenes/:id', productos_1.listaDeImagenes);
 router.get('/img/:sku', productos_1.exponerImg);
 router.post('/save-img', productos_1.saveDataImg);
+router.get('/delete/:id/:nombre', productos_1.eliminarImage);
 exports.default = router;
 //# sourceMappingURL=producto.js.map

@@ -3,6 +3,9 @@ import multer from 'multer';
 import  Multer  from 'multer';
 import MySQL from '../db/conexion';
 import path from 'path';
+import fs from 'fs';
+
+
 
 
 export const getProductos = (req: Request, res: Response) =>{
@@ -385,7 +388,6 @@ export const getProducto = (req:Request, res:Response) =>{
 export const editarProducto = async (req: Request, res: Response) => {
     // console.log(req.body);
 
-//    console.log(req.body);
 
     const {nombre,status,codigo_sherpa,precio,cliente,kam,material,medidas_producto,peso_producto,cdp,capacidad,packing_venta,medidas_ctn,peso_ctn,brandeado,formato_venta,codigo_isp,codigo_cliente,id,erp,short_description} = req.body;
     
@@ -523,4 +525,39 @@ export const saveDataImg = async (req: Request, res: Response) => {
             message:'Registro exitoso',
         });
     });
+}
+export const eliminarImage = async (req: Request, res: Response) => {
+    let id = req.params.id;
+    let nombre = req.params.nombre;
+    try {
+        const pathImage = path.join(__dirname,'../../uploads/',nombre); 
+        console.log(pathImage);
+        fs.unlinkSync(pathImage)
+
+        const query = `DELETE FROM imagenes_sku WHERE id=${id}`;
+        MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
+            
+            if(err){
+                res.status(400).json({
+                    ok:false
+                });
+                return;
+            }
+            res.json({
+                ok:true,
+                mensaje:"registro eliminado"
+            });
+        });
+        //file removed
+      } catch(err) {
+        console.error(err)
+        res.json({
+            ok:false,
+            mensaje:"ha ocurrido un error al eliminar el archivo"
+        })
+      }
+
+ 
+    
+  
 }

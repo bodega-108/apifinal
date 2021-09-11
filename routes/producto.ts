@@ -20,7 +20,8 @@ import { getProductos,
         upload,
         exponerImg,
         listaDeImagenes,
-        saveDataImg} from '../constrollers/productos';
+        saveDataImg,
+        eliminarImage} from '../constrollers/productos';
 
 const router =  Router();
 router.get('/skus/:categoria',getSkusCat);
@@ -64,5 +65,7 @@ router.get('/imagenes/:id',listaDeImagenes);
 router.get('/img/:sku',exponerImg);
 
 router.post('/save-img',saveDataImg);
+
+router.get('/delete/:id/:nombre',eliminarImage);
 
 export default router;
