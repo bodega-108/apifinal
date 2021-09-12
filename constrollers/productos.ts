@@ -393,7 +393,7 @@ export const editarProducto = async (req: Request, res: Response) => {
     
 
 
-    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material.toLowerCase()}",medidas="${medidas_producto.toLowerCase().replace(/ /g, '')}", peso_producto="${peso_producto.toLowerCase().replace(/ /g, '')}", color_diseno_panton="${cdp.toLowerCase()}",capacidad="${capacidad.toLowerCase().replace(/ /g, '')}",packing_venta="${packing_venta.toLowerCase().replace(/ /g, '')}", medidas_ctn="${medidas_ctn.toLowerCase().replace(/ /g, '')}",peso_ctn="${peso_ctn.toLowerCase()}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}" WHERE id = ${id}`;
+    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}" WHERE id = ${id}`;
     // console.log(query);
 
     MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
