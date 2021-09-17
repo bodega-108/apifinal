@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { getProductosExcel } from '../constrollers/productos';
 import { getProductos, 
          getSku, 
          getProductoCat, 
@@ -21,7 +22,8 @@ import { getProductos,
         exponerImg,
         listaDeImagenes,
         saveDataImg,
-        eliminarImage} from '../constrollers/productos';
+        eliminarImage,
+        descargarExcel} from '../constrollers/productos';
 
 const router =  Router();
 router.get('/skus/:categoria',getSkusCat);
@@ -67,5 +69,9 @@ router.get('/img/:sku',exponerImg);
 router.post('/save-img',saveDataImg);
 
 router.get('/delete/:id/:nombre',eliminarImage);
+
+router.get('/descargarExcel/:nombre',descargarExcel);
+
+router.get('/generarExcelTotal',getProductosExcel);
 
 export default router;

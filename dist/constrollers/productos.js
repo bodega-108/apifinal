@@ -12,12 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductos = void 0;
+exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+/**
+ * Libreria para generar Excel
+ */
+const exportService_js_1 = require("./exportService.js");
 exports.getProductos = (req, res) => {
     const query = ` SELECT * FROM producto`;
     conexion_1.default.ejecutarQuery(query, [], (err, productos) => {
@@ -33,6 +37,51 @@ exports.getProductos = (req, res) => {
         });
     });
 };
+exports.getProductosExcel = (req, res) => {
+    /**
+     * Preparando excel
+     */
+    const workSheetColumnName = [
+        "id",
+        "sku",
+        "estado",
+        "nombre",
+        "precio",
+        "codigo sherpa",
+        "material",
+        "medidas",
+        "peso_producto",
+        "color-diseño-panton",
+        "capacidad",
+        "packing_venta",
+        "medidas_ctn",
+        "peso_ctn",
+        "esteril",
+        "formato",
+        "codigo_cliente",
+        "codigo_isp",
+        "descripcion"
+    ];
+    const query = ` SELECT * FROM producto`;
+    conexion_1.default.ejecutarQuery(query, [], (err, productos) => {
+        if (err) {
+            res.status(400).json({
+                ok: false
+            });
+            return;
+        }
+        let fecha = new Date();
+        const workSheetName = 'Productos';
+        const filePath = path_1.default.join(__dirname, `../../outputFiles/productos-${fecha.getTime()}.xlsx`);
+        const nombre = (filePath.slice(-28)).split('.');
+        exportService_js_1.exportUsersToExcel(productos, workSheetColumnName, workSheetName, filePath);
+        res.json({
+            ok: true,
+            archiExcel: nombre[0],
+            productos
+        });
+    });
+};
 exports.getSku = (req, res) => {
     let sku = req.params.sku;
     let columna;
@@ -44,7 +93,31 @@ exports.getSku = (req, res) => {
         columna = 'sku';
     }
     const query = ` SELECT * FROM producto WHERE ${columna} LIKE "%${sku}%"`;
-    console.log(query);
+    /**
+     * Preparando excel
+     */
+    const workSheetColumnName = [
+        "id",
+        "sku",
+        "estado",
+        "nombre",
+        "precio",
+        "codigo sherpa",
+        "material",
+        "medidas",
+        "peso_producto",
+        "color-diseño-panton",
+        "capacidad",
+        "packing_venta",
+        "medidas_ctn",
+        "peso_ctn",
+        "esteril",
+        "formato",
+        "codigo_cliente",
+        "codigo_isp",
+        "descripcion"
+    ];
+    let fecha = new Date();
     conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
         if (err) {
             res.json({
@@ -53,8 +126,13 @@ exports.getSku = (req, res) => {
             });
             return;
         }
+        const workSheetName = 'Productos';
+        const filePath = path_1.default.join(__dirname, `../../outputFiles/productos-${fecha.getTime()}.xlsx`);
+        const nombre = (filePath.slice(-28)).split('.');
+        exportService_js_1.exportUsersToExcel(producto, workSheetColumnName, workSheetName, filePath);
         res.json({
             ok: true,
+            archiExcel: nombre[0],
             producto
         });
     });
@@ -449,6 +527,19 @@ exports.eliminarImage = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.json({
             ok: false,
             mensaje: "ha ocurrido un error al eliminar el archivo"
+        });
+    }
+});
+exports.descargarExcel = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const nombre = req.params.nombre;
+    try {
+        const url = path_1.default.join(__dirname, `../../outputFiles/${nombre}.xlsx`);
+        res.sendFile(url);
+    }
+    catch (err) {
+        res.json({
+            ok: false,
+            error: err
         });
     }
 });

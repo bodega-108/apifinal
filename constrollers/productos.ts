@@ -4,8 +4,12 @@ import  Multer  from 'multer';
 import MySQL from '../db/conexion';
 import path from 'path';
 import fs from 'fs';
+import Downloader from 'nodejs-file-downloader';
 
-
+/**
+ * Libreria para generar Excel
+ */
+import { exportUsersToExcel }  from './exportService.js';
 
 
 export const getProductos = (req: Request, res: Response) =>{
@@ -28,6 +32,60 @@ export const getProductos = (req: Request, res: Response) =>{
 
     });
 }
+export const getProductosExcel = (req: Request, res: Response) =>{
+    
+    /**
+     * Preparando excel
+     */
+     const workSheetColumnName = [
+        "id",
+        "sku",
+        "estado",
+        "nombre",
+        "precio",
+        "codigo sherpa",
+        "material",
+        "medidas",
+        "peso_producto",
+        "color-diseño-panton",
+        "capacidad",
+        "packing_venta",
+        "medidas_ctn",
+        "peso_ctn",
+        "esteril",
+        "formato",
+        "codigo_cliente",
+        "codigo_isp",
+        "descripcion"
+    ]
+
+
+
+    const query =` SELECT * FROM producto`;
+
+    MySQL.ejecutarQuery(query,[],(err:any,productos:Object[])=>{
+        
+        if(err){
+            res.status(400).json({
+                ok:false
+            });
+            return;
+        }
+        let fecha = new Date();
+        const workSheetName = 'Productos';
+        const filePath =path.join(__dirname,`../../outputFiles/productos-${fecha.getTime()}.xlsx`);
+        const nombre = (filePath.slice(-28)).split('.');
+
+        exportUsersToExcel(productos, workSheetColumnName, workSheetName, filePath);
+
+        res.json({
+            ok:true,
+            archiExcel:nombre[0],
+            productos
+        });
+
+    });
+}
 
 export const getSku = (req: Request, res: Response) =>{
     
@@ -43,7 +101,33 @@ export const getSku = (req: Request, res: Response) =>{
     }
 
     const query = ` SELECT * FROM producto WHERE ${columna} LIKE "%${sku}%"`;
-    console.log(query);
+    
+    
+    /**
+     * Preparando excel
+     */
+     const workSheetColumnName = [
+        "id",
+        "sku",
+        "estado",
+        "nombre",
+        "precio",
+        "codigo sherpa",
+        "material",
+        "medidas",
+        "peso_producto",
+        "color-diseño-panton",
+        "capacidad",
+        "packing_venta",
+        "medidas_ctn",
+        "peso_ctn",
+        "esteril",
+        "formato",
+        "codigo_cliente",
+        "codigo_isp",
+        "descripcion"
+    ]
+    let fecha = new Date();
     MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
 
         if(err){
@@ -53,8 +137,16 @@ export const getSku = (req: Request, res: Response) =>{
             });
             return;
         }
+        
+        const workSheetName = 'Productos';
+        const filePath =path.join(__dirname,`../../outputFiles/productos-${fecha.getTime()}.xlsx`);
+        const nombre = (filePath.slice(-28)).split('.');
+
+        exportUsersToExcel(producto, workSheetColumnName, workSheetName, filePath);
+
         res.json({
             ok:true,
+            archiExcel:nombre[0],
             producto
         });
     });
@@ -562,3 +654,19 @@ export const eliminarImage = async (req: Request, res: Response) => {
     
   
 }
+export const descargarExcel = async(req: Request, res: Response)=>{
+    const nombre = req.params.nombre;
+     
+     try {
+        const url = path.join(__dirname,`../../outputFiles/${nombre}.xlsx`);
+        res.sendFile(url);
+     }catch(err){
+         res.json({
+             ok:false,
+             error:err
+         });
+     }
+     
+} 
+
+
