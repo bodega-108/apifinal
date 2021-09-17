@@ -13,10 +13,10 @@ export default class MySQL{
         
         this.cnn = mysql.createConnection({
             // host:'localhost',
-            // user:'root',
-            // password:'',
-            // database:'generador',
-            // port:3306,
+            user:'root',
+            password:'',
+            database:'generador',
+            port:3306,
             
             // host:'18.231.16.7',
             // user:'eduardo',
@@ -25,11 +25,11 @@ export default class MySQL{
             // port:3306,
 
             // Produccion
-            host:'localhost',
-            user:'emonk',
-            password:'Desarrollo@emonk1',
-            database:'generador',
-            port:3306,
+            // host:'localhost',
+            // user:'emonk',
+            // password:'Desarrollo@emonk1',
+            // database:'generador',
+            // port:3306,
             
         });
         this.conectarDB();
