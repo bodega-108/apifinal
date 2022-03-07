@@ -4,7 +4,8 @@ import  Multer  from 'multer';
 import MySQL from '../db/conexion';
 import path from 'path';
 import fs from 'fs';
-import Downloader from 'nodejs-file-downloader';
+// import { transporter } from './emailer';
+
 
 /**
  * Libreria para generar Excel
@@ -668,5 +669,29 @@ export const descargarExcel = async(req: Request, res: Response)=>{
      }
      
 } 
+// export const sendEmail = async (req: Request, res: Response) => {
 
+//     const email = req.body.email;
+
+//     try {
+//         await transporter.sendMail({
+//         from: 'Desarrollo Emonk', // sender address
+//         to: email, // list of receivers
+//         subject: "Test Desarroll", // Subject line
+//         text: "Hello world?", // plain text body
+//         html: `
+//             <h1>Emonk sktock</h1>
+//             <p>Estimado cliente, nuestros registros alertaron que proximamente finalizara su stock para el producto Papel Yali 50 kilogramos</p>
+//         `, // html body
+//         });
+
+//         res.json({
+//             ok:true,
+//             message:`se notificó correctamente por mail al usuario ${email}`
+//         })
+//     } catch (error) {
+        
+//         return res.status(400).json({ message: 'Something goes wrong!'});
+//     }
+// }
 

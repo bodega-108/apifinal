@@ -18,6 +18,7 @@ const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+// import { transporter } from './emailer';
 /**
  * Libreria para generar Excel
  */
@@ -543,4 +544,25 @@ exports.descargarExcel = (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     }
 });
+// export const sendEmail = async (req: Request, res: Response) => {
+//     const email = req.body.email;
+//     try {
+//         await transporter.sendMail({
+//         from: 'Desarrollo Emonk', // sender address
+//         to: email, // list of receivers
+//         subject: "Test Desarroll", // Subject line
+//         text: "Hello world?", // plain text body
+//         html: `
+//             <h1>Emonk sktock</h1>
+//             <p>Estimado cliente, nuestros registros alertaron que proximamente finalizara su stock para el producto Papel Yali 50 kilogramos</p>
+//         `, // html body
+//         });
+//         res.json({
+//             ok:true,
+//             message:`se notificó correctamente por mail al usuario ${email}`
+//         })
+//     } catch (error) {
+//         return res.status(400).json({ message: 'Something goes wrong!'});
+//     }
+// }
 //# sourceMappingURL=productos.js.map

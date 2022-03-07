@@ -28,5 +28,6 @@ router.post('/save-img', productos_2.saveDataImg);
 router.get('/delete/:id/:nombre', productos_2.eliminarImage);
 router.get('/descargarExcel/:nombre', productos_2.descargarExcel);
 router.get('/generarExcelTotal', productos_1.getProductosExcel);
+// router.post('/emails',sendEmail);
 exports.default = router;
 //# sourceMappingURL=producto.js.map

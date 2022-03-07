@@ -6,6 +6,7 @@ import morgan from 'morgan';
 
 import MySQL from '../db/conexion';
 
+
 export default  class Server{
 
     private app: Application;
@@ -24,6 +25,8 @@ export default  class Server{
         this.middlewares();
         //definir las rutas
         this.routes();
+
+        
     }
 
     routes(){
@@ -65,4 +68,6 @@ export default  class Server{
             throw new Error(e);
         }
     }
+
+
 }   
