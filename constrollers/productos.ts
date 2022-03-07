@@ -695,3 +695,21 @@ export const descargarExcel = async(req: Request, res: Response)=>{
 //     }
 // }
 
+export const gatoTamborilero = async(req: Request, res: Response)=>{
+    const ataque = req.params.ataque;
+
+    if(ataque == '1'){
+        res.json({
+            ok:true,
+            ataque:'Zarpaso mortal'
+        });
+    }
+
+    if(ataque == '2'){
+        res.json({
+            ok:true,
+            ataque:'Macarena Infinita'
+        });
+
+}
+}

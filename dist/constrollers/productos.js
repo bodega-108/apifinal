@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
+exports.gatoTamborilero = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
@@ -565,4 +565,19 @@ exports.descargarExcel = (req, res) => __awaiter(void 0, void 0, void 0, functio
 //         return res.status(400).json({ message: 'Something goes wrong!'});
 //     }
 // }
+exports.gatoTamborilero = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const ataque = req.params.ataque;
+    if (ataque == '1') {
+        res.json({
+            ok: true,
+            ataque: 'Zarpaso mortal'
+        });
+    }
+    if (ataque == '2') {
+        res.json({
+            ok: true,
+            ataque: 'Macarena Infinita'
+        });
+    }
+});
 //# sourceMappingURL=productos.js.map
