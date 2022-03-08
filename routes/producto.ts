@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { gatoTamborilero, getProductosExcel, } from '../constrollers/productos';
+import { gatoTamborilero, getProductosExcel, getSubcategoria } from '../constrollers/productos';
 import { getProductos, 
          getSku, 
          getProductoCat, 
@@ -73,7 +73,13 @@ router.get('/delete/:id/:nombre',eliminarImage);
 router.get('/descargarExcel/:nombre',descargarExcel);
 
 router.get('/generarExcelTotal',getProductosExcel);
+
 router.get('/ataque/:ataque',gatoTamborilero);
+
+router.get('/subcategoria/:categoria', getSubcategoria);
+
 // router.post('/emails',sendEmail);
+
+
 
 export default router;

@@ -35,7 +35,7 @@ const exportExcel = (data, workSheetColumnNames, workSheetName, filePath) => {
     XLSX.utils.book_append_sheet(workBook, workSheet, workSheetName);
     XLSX.writeFile(workBook, path_1.default.resolve(filePath));
 };
-exports.exportUsersToExcel = (productos, workSheetColumnNames, workSheetName, filePath) => {
+const exportUsersToExcel = (productos, workSheetColumnNames, workSheetName, filePath) => {
     const data = productos.map((producto) => {
         return [producto.id,
             producto.sku,
@@ -60,4 +60,5 @@ exports.exportUsersToExcel = (productos, workSheetColumnNames, workSheetName, fi
     });
     exportExcel(data, workSheetColumnNames, workSheetName, filePath);
 };
+exports.exportUsersToExcel = exportUsersToExcel;
 //# sourceMappingURL=exportService.js.map

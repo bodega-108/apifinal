@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gatoTamborilero = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
+exports.gatoTamborilero = exports.getSubcategoria = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
@@ -23,7 +23,7 @@ const fs_1 = __importDefault(require("fs"));
  * Libreria para generar Excel
  */
 const exportService_js_1 = require("./exportService.js");
-exports.getProductos = (req, res) => {
+const getProductos = (req, res) => {
     const query = ` SELECT * FROM producto`;
     conexion_1.default.ejecutarQuery(query, [], (err, productos) => {
         if (err) {
@@ -38,7 +38,8 @@ exports.getProductos = (req, res) => {
         });
     });
 };
-exports.getProductosExcel = (req, res) => {
+exports.getProductos = getProductos;
+const getProductosExcel = (req, res) => {
     /**
      * Preparando excel
      */
@@ -83,7 +84,8 @@ exports.getProductosExcel = (req, res) => {
         });
     });
 };
-exports.getSku = (req, res) => {
+exports.getProductosExcel = getProductosExcel;
+const getSku = (req, res) => {
     let sku = req.params.sku;
     let columna;
     let texto = /[a-zA-Z]/g;
@@ -138,7 +140,8 @@ exports.getSku = (req, res) => {
         });
     });
 };
-exports.getProductoCat = (req, res) => {
+exports.getSku = getSku;
+const getProductoCat = (req, res) => {
     let id = req.params.categoria;
     //const query = ` SELECT p.nombre, p.sku FROM producto p INNER JOIN categoria c ON p.id_categoria = c.id WHERE c.identificador_ctg=${id}`;
     const query = ` SELECT p.nombre, p.sku FROM producto p INNER JOIN categoria c ON p.id_categoria = c.id WHERE c.id=${id}`;
@@ -157,7 +160,8 @@ exports.getProductoCat = (req, res) => {
         });
     });
 };
-exports.getSkusCat = (req, res) => {
+exports.getProductoCat = getProductoCat;
+const getSkusCat = (req, res) => {
     let id = req.params.categoria;
     //const query = ` SELECT p.nombre, p.sku FROM producto p INNER JOIN categoria c ON p.id_categoria = c.id WHERE c.identificador_ctg=${id}`;
     const query = ` SELECT p.sku FROM producto p INNER JOIN categoria c ON p.id_categoria = c.id WHERE c.id=${id}`;
@@ -176,7 +180,8 @@ exports.getSkusCat = (req, res) => {
         });
     });
 };
-exports.saveProductos = (req, res) => {
+exports.getSkusCat = getSkusCat;
+const saveProductos = (req, res) => {
     const skus = req.body;
     let contador = 0;
     //let query = "INSERT INTO productos (sku, estado, nombre, id_categoria, precio, id_cliente, id_kam) VALUES ?";
@@ -205,7 +210,8 @@ exports.saveProductos = (req, res) => {
         });
     });
 };
-exports.update = (req, res) => {
+exports.saveProductos = saveProductos;
+const update = (req, res) => {
     let id = req.body.id;
     let sku = req.body.sku;
     let nombre = req.body.nombre;
@@ -229,7 +235,8 @@ exports.update = (req, res) => {
         });
     });
 };
-exports.getCategoria = (req, res) => {
+exports.update = update;
+const getCategoria = (req, res) => {
     const query = `SELECT * FROM categoria;`;
     conexion_1.default.ejecutarQuery(query, [], (err, categoria) => {
         if (err) {
@@ -245,7 +252,8 @@ exports.getCategoria = (req, res) => {
         });
     });
 };
-exports.getCliente = (req, res) => {
+exports.getCategoria = getCategoria;
+const getCliente = (req, res) => {
     const query = `SELECT * FROM cliente`;
     conexion_1.default.ejecutarQuery(query, [], (err, clientes) => {
         if (err) {
@@ -261,7 +269,8 @@ exports.getCliente = (req, res) => {
         });
     });
 };
-exports.getKams = (req, res) => {
+exports.getCliente = getCliente;
+const getKams = (req, res) => {
     const query = `SELECT * FROM kam`;
     conexion_1.default.ejecutarQuery(query, [], (err, kams) => {
         if (err) {
@@ -277,7 +286,8 @@ exports.getKams = (req, res) => {
         });
     });
 };
-exports.getIdentificadorCtg = (req, res) => {
+exports.getKams = getKams;
+const getIdentificadorCtg = (req, res) => {
     const id_ctg = req.params.id;
     const query = `SELECT identificador_ctg FROM categoria WHERE id="${id_ctg}"`;
     console.log(query);
@@ -295,7 +305,8 @@ exports.getIdentificadorCtg = (req, res) => {
         });
     });
 };
-exports.postCategoria = (req, res) => {
+exports.getIdentificadorCtg = getIdentificadorCtg;
+const postCategoria = (req, res) => {
     const nombre = req.body.nombre;
     const identificador = req.body.identificadorCtg;
     const query = ` INSERT INTO categoria (nombre, identificador_ctg) VALUES ("${nombre}", ${identificador})`;
@@ -313,7 +324,8 @@ exports.postCategoria = (req, res) => {
         });
     });
 };
-exports.postCliente = (req, res) => {
+exports.postCategoria = postCategoria;
+const postCliente = (req, res) => {
     const nombre = req.body.nombre;
     const id_kam = req.body.id_kam;
     const query = `INSERT INTO cliente(nombre, id_kam) VALUES("${nombre}",${id_kam})`;
@@ -331,7 +343,8 @@ exports.postCliente = (req, res) => {
         });
     });
 };
-exports.postKam = (req, res) => {
+exports.postCliente = postCliente;
+const postKam = (req, res) => {
     const nombre = req.body.nombre;
     const apellido = req.body.apellido;
     const query = `INSERT INTO kam(nombre, apellido) VALUES("${nombre}","${apellido}")`;
@@ -349,7 +362,8 @@ exports.postKam = (req, res) => {
         });
     });
 };
-exports.getAllIdentificador = (req, res) => {
+exports.postKam = postKam;
+const getAllIdentificador = (req, res) => {
     const query = `SELECT identificador_ctg FROM categoria`;
     conexion_1.default.ejecutarQuery(query, [], (err, identificadores) => {
         if (err) {
@@ -365,7 +379,8 @@ exports.getAllIdentificador = (req, res) => {
         });
     });
 };
-exports.deleteProducto = (req, res) => {
+exports.getAllIdentificador = getAllIdentificador;
+const deleteProducto = (req, res) => {
     let id = req.params.id;
     const query = `DELETE FROM producto WHERE id=${id}`;
     conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
@@ -381,7 +396,8 @@ exports.deleteProducto = (req, res) => {
         });
     });
 };
-exports.getProducto = (req, res) => {
+exports.deleteProducto = deleteProducto;
+const getProducto = (req, res) => {
     let id = req.params.id;
     const query = `SELECT * FROM producto WHERE id=${id}`;
     conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
@@ -397,7 +413,8 @@ exports.getProducto = (req, res) => {
         });
     });
 };
-exports.editarProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getProducto = getProducto;
+const editarProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log(req.body);
     const { nombre, status, codigo_sherpa, precio, cliente, kam, material, medidas_producto, peso_producto, cdp, capacidad, packing_venta, medidas_ctn, peso_ctn, brandeado, formato_venta, codigo_isp, codigo_cliente, id, erp, short_description, adt_oro, adt_excel, progress, esteril } = req.body;
     const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}",adt_oro="${adt_oro}",adt_excel="${adt_excel}",progress="${progress}",esteril="${esteril}" WHERE id = ${id}`;
@@ -415,12 +432,14 @@ exports.editarProducto = (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     });
 });
-exports.subirImagenes = (req, res) => {
+exports.editarProducto = editarProducto;
+const subirImagenes = (req, res) => {
     res.json({
         ok: true
     });
     exports.upload;
 };
+exports.subirImagenes = subirImagenes;
 const storage = multer_2.default.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './uploads');
@@ -431,7 +450,7 @@ const storage = multer_2.default.diskStorage({
 });
 exports.upload = multer_1.default({ storage: storage });
 // upload.single('myfile');
-exports.listaDeImagenes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const listaDeImagenes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const query = `SELECT i.nombre, i.id FROM imagenes_sku i INNER JOIN producto p ON i.id_sku = p.id WHERE p.id=${id};`;
     console.log(query);
@@ -455,7 +474,8 @@ exports.listaDeImagenes = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
     });
 });
-exports.exponerImg = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.listaDeImagenes = listaDeImagenes;
+const exponerImg = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const sku = req.params.sku;
     console.log(sku);
     const query = `SELECT i.nombre FROM imagenes_sku i INNER JOIN producto p ON i.id_sku = p.id WHERE i.nombre="${sku}";`;
@@ -473,7 +493,8 @@ exports.exponerImg = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.sendFile(foto);
     });
 });
-exports.saveDataImg = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.exponerImg = exponerImg;
+const saveDataImg = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const listaImagenes = req.body;
     let contador = 0;
     console.log(req.body);
@@ -501,7 +522,8 @@ exports.saveDataImg = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     });
 });
-exports.eliminarImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.saveDataImg = saveDataImg;
+const eliminarImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
     let nombre = req.params.nombre;
     try {
@@ -531,7 +553,8 @@ exports.eliminarImage = (req, res) => __awaiter(void 0, void 0, void 0, function
         });
     }
 });
-exports.descargarExcel = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.eliminarImage = eliminarImage;
+const descargarExcel = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const nombre = req.params.nombre;
     try {
         const url = path_1.default.join(__dirname, `../../outputFiles/${nombre}.xlsx`);
@@ -544,6 +567,7 @@ exports.descargarExcel = (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     }
 });
+exports.descargarExcel = descargarExcel;
 // export const sendEmail = async (req: Request, res: Response) => {
 //     const email = req.body.email;
 //     try {
@@ -565,7 +589,27 @@ exports.descargarExcel = (req, res) => __awaiter(void 0, void 0, void 0, functio
 //         return res.status(400).json({ message: 'Something goes wrong!'});
 //     }
 // }
-exports.gatoTamborilero = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getSubcategoria = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const categoria = req.params.categoria;
+    if (categoria == '1') {
+        res.json({
+            ok: true,
+            subcategoria: [
+                'horno',
+                'vagillas',
+                'utencilios de cocina'
+            ]
+        });
+    }
+    else {
+        res.json({
+            ok: false,
+            error: 'no existe esa categoria'
+        });
+    }
+});
+exports.getSubcategoria = getSubcategoria;
+const gatoTamborilero = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const ataque = req.params.ataque;
     if (ataque == '1') {
         res.json({
@@ -580,4 +624,5 @@ exports.gatoTamborilero = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
     }
 });
+exports.gatoTamborilero = gatoTamborilero;
 //# sourceMappingURL=productos.js.map

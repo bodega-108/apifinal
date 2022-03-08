@@ -695,6 +695,27 @@ export const descargarExcel = async(req: Request, res: Response)=>{
 //     }
 // }
 
+export const getSubcategoria = async( req: Request, res: Response ) => {
+
+     const categoria = req.params.categoria;
+
+     if( categoria == '1'){
+        res.json({ 
+            ok: true,
+            subcategoria: [
+                'horno',
+                'vagillas',
+                'utencilios de cocina'
+            ]
+        });
+     }else{
+         res.json({ 
+             ok: false,
+             error: 'no existe esa categoria'
+         })
+     }
+}
+
 export const gatoTamborilero = async(req: Request, res: Response)=>{
     const ataque = req.params.ataque;
 
@@ -711,5 +732,5 @@ export const gatoTamborilero = async(req: Request, res: Response)=>{
             ataque:'Macarena Infinita'
         });
 
-}
+    }
 }
