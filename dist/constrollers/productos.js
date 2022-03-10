@@ -589,25 +589,23 @@ exports.descargarExcel = descargarExcel;
 //         return res.status(400).json({ message: 'Something goes wrong!'});
 //     }
 // }
-const getSubcategoria = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const categoria = req.params.categoria;
-    if (categoria == '1') {
+const getSubcategoria = (req, res) => {
+    let id_categoria = req.params.categoria;
+    const query = `SELECT subcategoria.nombre from subcategoria INNER JOIN categoria ON subcategoria.id_categoria = categoria.id where categoria.id=${id_categoria};`;
+    conexion_1.default.ejecutarQuery(query, [], (err, subcategoria) => {
+        if (err) {
+            res.status(400).json({
+                ok: false,
+                message: 'esa categoria no tiene subcategorias asociadas'
+            });
+            return;
+        }
         res.json({
             ok: true,
-            subcategoria: [
-                'horno',
-                'vagillas',
-                'utencilios de cocina'
-            ]
+            subcategoria
         });
-    }
-    else {
-        res.json({
-            ok: false,
-            error: 'no existe esa categoria'
-        });
-    }
-});
+    });
+};
 exports.getSubcategoria = getSubcategoria;
 const gatoTamborilero = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const ataque = req.params.ataque;

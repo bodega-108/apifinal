@@ -695,25 +695,27 @@ export const descargarExcel = async(req: Request, res: Response)=>{
 //     }
 // }
 
-export const getSubcategoria = async( req: Request, res: Response ) => {
+export const getSubcategoria = ( req: Request, res: Response ) => {
 
-     const categoria = req.params.categoria;
+     let id_categoria = req.params.categoria;
+     
+     const query = `SELECT subcategoria.nombre from subcategoria INNER JOIN categoria ON subcategoria.id_categoria = categoria.id where categoria.id=${id_categoria};`;
 
-     if( categoria == '1'){
-        res.json({ 
-            ok: true,
-            subcategoria: [
-                'horno',
-                'vagillas',
-                'utencilios de cocina'
-            ]
+     MySQL.ejecutarQuery( query,[],(err:any,subcategoria:Object[])=>{
+        
+        if(err){
+            res.status(400).json({
+                ok:false,
+                message:'esa categoria no tiene subcategorias asociadas'
+            });
+            return;
+        }
+
+        res.json({
+            ok:true,
+            subcategoria
         });
-     }else{
-         res.json({ 
-             ok: false,
-             error: 'no existe esa categoria'
-         })
-     }
+    });
 }
 
 export const gatoTamborilero = async(req: Request, res: Response)=>{
