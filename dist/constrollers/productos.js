@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gatoTamborilero = exports.getSubcategoria = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
+exports.getSubcategoria = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
@@ -190,17 +190,17 @@ const saveProductos = (req, res) => {
     let cadenas = [];
     for (let i = 0; i < skus.length; i++) {
         contador++;
-        cadena = `("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam},"${skus[i].codigo_sherpa}")`;
+        cadena = `("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].id_subcategoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam},"${skus[i].codigo_sherpa}")`;
         cadenas.push(cadena);
     }
-    query = ` INSERT INTO producto (sku, estado, nombre, id_categoria, precio, id_cliente, id_kam, codigo_sherpa) VALUES ${cadenas.toString()}`;
+    query = ` INSERT INTO producto (sku, estado, nombre, id_categoria, id_subcategoria, precio, id_cliente, id_kam, codigo_sherpa) VALUES ${cadenas.toString()}`;
     console.log(query);
     console.log(skus);
     conexion_1.default.ejecutarQuery(query, [], (err, productos) => {
         if (err) {
             res.status(400).json({
                 ok: false,
-                mensaje: `No se en resultados para la busqueda`
+                mensaje: `No se pudo guardar el producto`
             });
             return;
         }
@@ -217,15 +217,16 @@ const update = (req, res) => {
     let nombre = req.body.nombre;
     let cliente = req.body.cliente;
     let categoria = req.body.categoria;
+    let subcategoria = req.body.subcategoria;
     let precio = req.body.precio;
     let kam = req.body.kam;
-    let query = ` UPDATE producto SET sku="${sku}", nombre ="${nombre}", id_categoria ="${categoria}", precio ="${precio}", id_cliente ="${cliente}",id_kam ="${kam}" WHERE id ="${id}";`;
+    let query = ` UPDATE producto SET sku="${sku}", nombre ="${nombre}", id_categoria ="${categoria}", id_subcategoria="${subcategoria}", precio ="${precio}", id_cliente ="${cliente}",id_kam ="${kam}" WHERE id ="${id}";`;
     console.log(query);
     conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
         if (err) {
             res.json({
                 ok: false,
-                mensaje: `No se en resultados para la busqueda ${sku}`
+                mensaje: `No se ha podido actualizar el producto con el ${sku}`
             });
             return;
         }
@@ -416,8 +417,8 @@ const getProducto = (req, res) => {
 exports.getProducto = getProducto;
 const editarProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log(req.body);
-    const { nombre, status, codigo_sherpa, precio, cliente, kam, material, medidas_producto, peso_producto, cdp, capacidad, packing_venta, medidas_ctn, peso_ctn, brandeado, formato_venta, codigo_isp, codigo_cliente, id, erp, short_description, adt_oro, adt_excel, progress, esteril } = req.body;
-    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}",adt_oro="${adt_oro}",adt_excel="${adt_excel}",progress="${progress}",esteril="${esteril}" WHERE id = ${id}`;
+    const { nombre, status, codigo_sherpa, subcategoria, precio, cliente, kam, material, medidas_producto, peso_producto, cdp, capacidad, packing_venta, medidas_ctn, peso_ctn, brandeado, formato_venta, codigo_isp, codigo_cliente, id, erp, short_description, adt_oro, adt_excel, progress, esteril } = req.body;
+    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}", id_subcategoria="${subcategoria}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}",adt_oro="${adt_oro}",adt_excel="${adt_excel}",progress="${progress}",esteril="${esteril}" WHERE id = ${id}`;
     // console.log(query);
     conexion_1.default.ejecutarQuery(query, [], (err, producto) => {
         if (err) {
@@ -591,7 +592,7 @@ exports.descargarExcel = descargarExcel;
 // }
 const getSubcategoria = (req, res) => {
     let id_categoria = req.params.categoria;
-    const query = `SELECT subcategoria.nombre from subcategoria INNER JOIN categoria ON subcategoria.id_categoria = categoria.id where categoria.id=${id_categoria};`;
+    const query = `SELECT c.nombre from subcategoria c INNER JOIN categoria ON c.id_categoria = categoria.id where categoria.id=${id_categoria};`;
     conexion_1.default.ejecutarQuery(query, [], (err, subcategoria) => {
         if (err) {
             res.status(400).json({
@@ -607,20 +608,4 @@ const getSubcategoria = (req, res) => {
     });
 };
 exports.getSubcategoria = getSubcategoria;
-const gatoTamborilero = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const ataque = req.params.ataque;
-    if (ataque == '1') {
-        res.json({
-            ok: true,
-            ataque: 'Zarpaso mortal'
-        });
-    }
-    if (ataque == '2') {
-        res.json({
-            ok: true,
-            ataque: 'Macarena Infinita'
-        });
-    }
-});
-exports.gatoTamborilero = gatoTamborilero;
 //# sourceMappingURL=productos.js.map

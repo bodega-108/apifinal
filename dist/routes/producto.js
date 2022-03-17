@@ -28,7 +28,6 @@ router.post('/save-img', productos_2.saveDataImg);
 router.get('/delete/:id/:nombre', productos_2.eliminarImage);
 router.get('/descargarExcel/:nombre', productos_2.descargarExcel);
 router.get('/generarExcelTotal', productos_1.getProductosExcel);
-router.get('/ataque/:ataque', productos_1.gatoTamborilero);
 router.get('/subcategoria/:categoria', productos_1.getSubcategoria);
 // router.post('/emails',sendEmail);
 exports.default = router;

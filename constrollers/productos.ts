@@ -214,12 +214,12 @@ export const saveProductos = (req:Request, res: Response)=>{
             
      for(let i = 0; i < skus.length; i++) {
          contador++;   
-         cadena =`("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam},"${skus[i].codigo_sherpa}")`;
+         cadena =`("${skus[i].sku}","${skus[i].estado}","${skus[i].nombre}",${skus[i].id_categoria},${skus[i].id_subcategoria},${skus[i].precio},${skus[i].id_cliente},${skus[i].id_kam},"${skus[i].codigo_sherpa}")`;
          cadenas.push(cadena); 
     
     }
 
-    query = ` INSERT INTO producto (sku, estado, nombre, id_categoria, precio, id_cliente, id_kam, codigo_sherpa) VALUES ${cadenas.toString()}`;
+    query = ` INSERT INTO producto (sku, estado, nombre, id_categoria, id_subcategoria, precio, id_cliente, id_kam, codigo_sherpa) VALUES ${cadenas.toString()}`;
     console.log(query);
     console.log(skus);
 
@@ -228,7 +228,7 @@ export const saveProductos = (req:Request, res: Response)=>{
     if(err){
        res.status(400).json({
            ok:false,
-           mensaje:`No se en resultados para la busqueda`
+           mensaje:`No se pudo guardar el producto`
            
         });   
         return;
@@ -246,10 +246,11 @@ export const update = (req: Request, res: Response)=>{
     let nombre = req.body.nombre;
     let cliente = req.body.cliente;
     let categoria = req.body.categoria;
+    let subcategoria = req.body.subcategoria;
     let precio = req.body.precio;
     let kam = req.body.kam;
 
-    let query = ` UPDATE producto SET sku="${sku}", nombre ="${nombre}", id_categoria ="${categoria}", precio ="${precio}", id_cliente ="${cliente}",id_kam ="${kam}" WHERE id ="${id}";`
+    let query = ` UPDATE producto SET sku="${sku}", nombre ="${nombre}", id_categoria ="${categoria}", id_subcategoria="${subcategoria}", precio ="${precio}", id_cliente ="${cliente}",id_kam ="${kam}" WHERE id ="${id}";`
 
     console.log(query);
 
@@ -258,7 +259,7 @@ export const update = (req: Request, res: Response)=>{
         if(err){
             res.json({
                 ok:false,
-                mensaje:`No se en resultados para la busqueda ${sku}`
+                mensaje:`No se ha podido actualizar el producto con el ${sku}`
             });
             
             return;
@@ -482,11 +483,11 @@ export const editarProducto = async (req: Request, res: Response) => {
     // console.log(req.body);
 
 
-    const {nombre,status,codigo_sherpa,precio,cliente,kam,material,medidas_producto,peso_producto,cdp,capacidad,packing_venta,medidas_ctn,peso_ctn,brandeado,formato_venta,codigo_isp,codigo_cliente,id,erp,short_description,adt_oro,adt_excel,progress,esteril} = req.body;
+    const {nombre,status,codigo_sherpa,subcategoria,precio,cliente,kam,material,medidas_producto,peso_producto,cdp,capacidad,packing_venta,medidas_ctn,peso_ctn,brandeado,formato_venta,codigo_isp,codigo_cliente,id,erp,short_description,adt_oro,adt_excel,progress,esteril} = req.body;
     
 
 
-    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}",adt_oro="${adt_oro}",adt_excel="${adt_excel}",progress="${progress}",esteril="${esteril}" WHERE id = ${id}`;
+    const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}", id_subcategoria="${subcategoria}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}",adt_oro="${adt_oro}",adt_excel="${adt_excel}",progress="${progress}",esteril="${esteril}" WHERE id = ${id}`;
     // console.log(query);
 
     MySQL.ejecutarQuery( query,[],(err:any,producto:Object[])=>{
@@ -699,7 +700,7 @@ export const getSubcategoria = ( req: Request, res: Response ) => {
 
      let id_categoria = req.params.categoria;
      
-     const query = `SELECT subcategoria.nombre from subcategoria INNER JOIN categoria ON subcategoria.id_categoria = categoria.id where categoria.id=${id_categoria};`;
+     const query = `SELECT c.nombre from subcategoria c INNER JOIN categoria ON c.id_categoria = categoria.id where categoria.id=${id_categoria};`;
 
      MySQL.ejecutarQuery( query,[],(err:any,subcategoria:Object[])=>{
         
@@ -718,21 +719,3 @@ export const getSubcategoria = ( req: Request, res: Response ) => {
     });
 }
 
-export const gatoTamborilero = async(req: Request, res: Response)=>{
-    const ataque = req.params.ataque;
-
-    if(ataque == '1'){
-        res.json({
-            ok:true,
-            ataque:'Zarpaso mortal'
-        });
-    }
-
-    if(ataque == '2'){
-        res.json({
-            ok:true,
-            ataque:'Macarena Infinita'
-        });
-
-    }
-}
