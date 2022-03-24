@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getProductosExcel, getSubcategoria } from '../constrollers/productos';
 import { getProductos, 
+         getColumnsProducts,
          getSku, 
          getProductoCat, 
          saveProductos, 
@@ -75,6 +76,8 @@ router.get('/descargarExcel/:nombre',descargarExcel);
 router.get('/generarExcelTotal',getProductosExcel);
 
 router.get('/subcategoria/:categoria', getSubcategoria);
+
+router.get( '/columna-productos', getColumnsProducts)
 
 // router.post('/emails',sendEmail);
 

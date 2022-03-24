@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSubcategoria = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
+exports.getColumnsProducts = exports.getSubcategoria = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
@@ -608,4 +608,21 @@ const getSubcategoria = (req, res) => {
     });
 };
 exports.getSubcategoria = getSubcategoria;
+const getColumnsProducts = (req, res) => {
+    const query = `SELECT  sku, nombre, estado, codigo_sherpa, id_cliente, id_kam, descripcion FROM producto`;
+    conexion_1.default.ejecutarQuery(query, [], (err, columns_products) => {
+        if (err) {
+            res.status(400).json({
+                ok: false,
+                message: 'no se logro acceder a los datos de los productos'
+            });
+            return;
+        }
+        res.json({
+            ok: true,
+            columns_products
+        });
+    });
+};
+exports.getColumnsProducts = getColumnsProducts;
 //# sourceMappingURL=productos.js.map

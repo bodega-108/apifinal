@@ -719,3 +719,25 @@ export const getSubcategoria = ( req: Request, res: Response ) => {
     });
 }
 
+export const getColumnsProducts = ( req: Request, res: Response ) => {
+
+    const query = `SELECT  sku, nombre, estado, codigo_sherpa, id_cliente, id_kam, descripcion FROM producto`;
+
+    MySQL.ejecutarQuery(query,[],(err:any,columns_products:Object[])=>{
+        
+        if(err){
+            res.status(400).json({
+                ok:false,
+                message:'no se logro acceder a los datos de los productos'
+            });
+            return;
+        }
+
+        res.json({
+            ok:true,
+            columns_products
+        });
+
+    });
+}
+
