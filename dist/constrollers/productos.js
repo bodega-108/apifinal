@@ -592,7 +592,7 @@ exports.descargarExcel = descargarExcel;
 // }
 const getSubcategoria = (req, res) => {
     let id_categoria = req.params.categoria;
-    const query = `SELECT c.nombre from subcategoria c INNER JOIN categoria ON c.id_categoria = categoria.id where categoria.id=${id_categoria};`;
+    const query = `SELECT s.nombre from subcategoria s INNER JOIN categoria ON s.id_categoria = categoria.id where categoria.id=${id_categoria};`;
     conexion_1.default.ejecutarQuery(query, [], (err, subcategoria) => {
         if (err) {
             res.status(400).json({
@@ -609,18 +609,36 @@ const getSubcategoria = (req, res) => {
 };
 exports.getSubcategoria = getSubcategoria;
 const getColumnsProducts = (req, res) => {
-    const query = `SELECT  sku, nombre, estado, codigo_sherpa, id_cliente, id_kam, descripcion FROM producto`;
+    const query = `SELECT p.sku, p.nombre, p.estado, p.codigo_sherpa, p.id_kam, p.id_cliente, p.descripcion FROM producto p`;
+    const query_cliente = `SELECT * FROM cliente`;
     conexion_1.default.ejecutarQuery(query, [], (err, columns_products) => {
-        if (err) {
-            res.status(400).json({
-                ok: false,
-                message: 'no se logro acceder a los datos de los productos'
+        conexion_1.default.ejecutarQuery(query_cliente, [], (err, clientes) => {
+            for (let i = 0; i < columns_products.length; i++) {
+                let id_cliente = columns_products[i].id_cliente;
+                for (let j = 0; j < clientes.length; j++) {
+                    if (clientes[j].id == id_cliente) {
+                        columns_products[i].cliente = clientes[j].nombre;
+                    }
+                }
+                let sku = columns_products[i].sku.substring(9);
+                if (sku === "000") {
+                    columns_products[i].tipo = "configurable";
+                }
+                else {
+                    columns_products[i].tipo = "simple";
+                }
+            }
+            if (err) {
+                res.status(400).json({
+                    ok: false,
+                    message: 'no se logro acceder a los datos de los productos'
+                });
+                return;
+            }
+            res.json({
+                ok: true,
+                columns_products
             });
-            return;
-        }
-        res.json({
-            ok: true,
-            columns_products
         });
     });
 };

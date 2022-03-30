@@ -482,10 +482,8 @@ export const getProducto = (req:Request, res:Response) =>{
 export const editarProducto = async (req: Request, res: Response) => {
     // console.log(req.body);
 
-
     const {nombre,status,codigo_sherpa,subcategoria,precio,cliente,kam,material,medidas_producto,peso_producto,cdp,capacidad,packing_venta,medidas_ctn,peso_ctn,brandeado,formato_venta,codigo_isp,codigo_cliente,id,erp,short_description,adt_oro,adt_excel,progress,esteril} = req.body;
     
-
 
     const query = `UPDATE producto SET nombre="${nombre}",estado="${status}",codigo_sherpa="${codigo_sherpa}", id_subcategoria="${subcategoria}",precio="${precio}",id_cliente=${cliente},id_kam=${kam},material="${material}",medidas="${medidas_producto}", peso_producto="${peso_producto}", color_diseno_panton="${cdp}",capacidad="${capacidad}",packing_venta="${packing_venta}", medidas_ctn="${medidas_ctn}",peso_ctn="${peso_ctn}",brandeado="${brandeado}",formato="${formato_venta}",codigo_isp="${codigo_isp}",codigo_cliente="${codigo_cliente}",descripcion="${short_description}",erp="${erp}",adt_oro="${adt_oro}",adt_excel="${adt_excel}",progress="${progress}",esteril="${esteril}" WHERE id = ${id}`;
     // console.log(query);
@@ -700,7 +698,7 @@ export const getSubcategoria = ( req: Request, res: Response ) => {
 
      let id_categoria = req.params.categoria;
      
-     const query = `SELECT c.nombre from subcategoria c INNER JOIN categoria ON c.id_categoria = categoria.id where categoria.id=${id_categoria};`;
+     const query = `SELECT s.nombre from subcategoria s INNER JOIN categoria ON s.id_categoria = categoria.id where categoria.id=${id_categoria};`;
 
      MySQL.ejecutarQuery( query,[],(err:any,subcategoria:Object[])=>{
         
@@ -721,23 +719,55 @@ export const getSubcategoria = ( req: Request, res: Response ) => {
 
 export const getColumnsProducts = ( req: Request, res: Response ) => {
 
-    const query = `SELECT  sku, nombre, estado, codigo_sherpa, id_cliente, id_kam, descripcion FROM producto`;
+    const query = `SELECT p.sku, p.nombre, p.estado, p.codigo_sherpa, p.id_kam, p.id_cliente, p.descripcion FROM producto p`;
 
-    MySQL.ejecutarQuery(query,[],(err:any,columns_products:Object[])=>{
-        
-        if(err){
-            res.status(400).json({
-                ok:false,
-                message:'no se logro acceder a los datos de los productos'
+    const query_cliente = `SELECT * FROM cliente`;
+    
+
+    MySQL.ejecutarQuery(query,[],(err:any,columns_products:any[])=>{
+
+        MySQL.ejecutarQuery( query_cliente,[],(err:any,clientes:any[])=>{
+
+            for( let i = 0; i < columns_products.length; i++ ){
+
+                let id_cliente = columns_products[i].id_cliente;
+
+                for( let j = 0; j < clientes.length; j++ ){
+
+                    if(clientes[j].id == id_cliente){
+
+                        columns_products[i].cliente = clientes[j].nombre;
+                    } 
+                }
+
+                let sku = columns_products[i].sku.substring(9);
+
+                if( sku === "000"){
+
+                    columns_products[i].tipo = "configurable";
+                   
+                }else{
+    
+                    columns_products[i].tipo = "simple";
+                    
+                }
+
+            }
+
+            if(err){
+                res.status(400).json({
+                    ok:false,
+                    message:'no se logro acceder a los datos de los productos'
+                });
+                return;
+            }
+    
+            res.json({
+                ok:true,
+                columns_products
             });
-            return;
-        }
+        })
 
-        res.json({
-            ok:true,
-            columns_products
-        });
 
     });
 }
-
