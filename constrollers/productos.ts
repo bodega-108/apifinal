@@ -740,17 +740,9 @@ export const getColumnsProducts = ( req: Request, res: Response ) => {
                     } 
                 }
 
-                let sku = columns_products[i].sku.substring(9);
+                let sku = columns_products[i].sku;
 
-                if( sku === "000"){
-
-                    columns_products[i].tipo = "configurable";
-                   
-                }else{
-    
-                    columns_products[i].tipo = "simple";
-                    
-                }
+                columns_products[i].tipo = getTypePrdoduct(sku);          
 
             }
 
@@ -768,6 +760,21 @@ export const getColumnsProducts = ( req: Request, res: Response ) => {
             });
         })
 
-
     });
 }
+
+export const getTypePrdoduct = ( sku: string ): string  => {
+
+    let codigo = sku.substring(9);
+
+    if( codigo === "000"){
+
+        return "Configurable";
+       
+    }else{
+
+        return "Simple";
+        
+    }
+
+} 

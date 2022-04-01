@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getColumnsProducts = exports.getSubcategoria = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
+exports.getTypePrdoduct = exports.getColumnsProducts = exports.getSubcategoria = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
@@ -620,13 +620,8 @@ const getColumnsProducts = (req, res) => {
                         columns_products[i].cliente = clientes[j].nombre;
                     }
                 }
-                let sku = columns_products[i].sku.substring(9);
-                if (sku === "000") {
-                    columns_products[i].tipo = "configurable";
-                }
-                else {
-                    columns_products[i].tipo = "simple";
-                }
+                let sku = columns_products[i].sku;
+                columns_products[i].tipo = exports.getTypePrdoduct(sku);
             }
             if (err) {
                 res.status(400).json({
@@ -643,4 +638,14 @@ const getColumnsProducts = (req, res) => {
     });
 };
 exports.getColumnsProducts = getColumnsProducts;
+const getTypePrdoduct = (sku) => {
+    let codigo = sku.substring(9);
+    if (codigo === "000") {
+        return "Configurable";
+    }
+    else {
+        return "Simple";
+    }
+};
+exports.getTypePrdoduct = getTypePrdoduct;
 //# sourceMappingURL=productos.js.map
