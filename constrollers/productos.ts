@@ -4,6 +4,9 @@ import  Multer  from 'multer';
 import MySQL from '../db/conexion';
 import path from 'path';
 import fs from 'fs';
+import Server from '../models/server';
+import db from '../db/connection';
+//import Productos from '../models/product_data'
 // import { transporter } from './emailer';
 
 
@@ -717,50 +720,109 @@ export const getSubcategoria = ( req: Request, res: Response ) => {
     });
 }
 
-export const getColumnsProducts = ( req: Request, res: Response ) => {
+export const getColumnsProducts = async ( req: Request, res: Response ) => {
 
-    const query = `SELECT p.sku, p.nombre, p.estado, p.codigo_sherpa, p.id_kam, p.id_cliente, p.descripcion FROM producto p`;
+    let limit =  parseInt(req.params.size);
+    let offset =  parseInt(req.params.page);
 
-    const query_cliente = `SELECT * FROM cliente`;
-    
+    const paginate = getpagination(limit,offset);
+    console.log(paginate.limit, paginate.offset);
 
-    MySQL.ejecutarQuery(query,[],(err:any,columns_products:any[])=>{
+    const conexion= new Server();
 
-        MySQL.ejecutarQuery( query_cliente,[],(err:any,clientes:any[])=>{
+    conexion.dbConnect()
+    .then(res => console.log(res));
 
-            for( let i = 0; i < columns_products.length; i++ ){
+    try {
 
-                let id_cliente = columns_products[i].id_cliente;
+        const [results, error] = await db.query(`SELECT COUNT(id) as total FROM producto`);
+        
+        //Para guardar el valor del total de registros de productos en un array
+        let total_item: any;
 
-                for( let j = 0; j < clientes.length; j++ ){
+        for( let t in results ){
+                total_item = results[t];
+            }
 
-                    if(clientes[j].id == id_cliente){
+        let total_page = Math.ceil(total_item.total/paginate.limit);
+        console.log(total_page);
 
-                        columns_products[i].cliente = clientes[j].nombre;
-                    } 
+
+        db.query(`SELECT p.sku, p.nombre, p.estado, p.codigo_sherpa, p.id_kam, p.id_cliente, p.descripcion FROM producto p LIMIT ${paginate.limit} OFFSET ${paginate.offset}`)
+            .then( async productos => {
+
+                let array_productos: any;
+
+                //Guardamos los datos en un array para agregarle los campos de nombre de cliente y type
+                for( let p in productos ) {
+
+                    array_productos = productos[p];
                 }
 
-                let sku = columns_products[i].sku;
+                db.query(`SELECT * FROM cliente`)
+                    .then( async clientes => {
 
-                columns_products[i].tipo = getTypePrdoduct(sku);          
+                        let array_clientes: any;
+                        //Guardamos todos los clientes en un array para navegar a travez del y poder identificarlo por el id
+                        for( let c in clientes ) {
 
-            }
+                            array_clientes = clientes[c];
+                        }
 
-            if(err){
-                res.status(400).json({
+                        //Agregamos los campos de nombre de cliente y el tipo a los datos de productos    
+                        for( let i = 0; i < array_productos.length; i++ ){
+
+                            let id_cliente = array_productos[i].id_cliente;
+
+                            for( let j = 0; j < array_clientes.length; j++ ){
+
+                                if(array_clientes[j].id == id_cliente){
+
+                                    array_productos[i].cliente = array_clientes[j].nombre;
+                                } 
+                            }  
+                            
+                            let sku = array_productos[i].sku;
+                            array_productos[i].tipo = getTypePrdoduct(sku);  
+
+                        }  
+                        
+                        res.json({
+                            ok:true,
+                            total_item:total_item.total,
+                            total_page:total_page,
+                            next_page: paginate.next_page,
+                            prev_page: paginate.prev_page,
+                            array_productos
+                        });
+
+                    }).catch(  err => {
+                        res.status(500).send({ 
+                            ok:false,
+                            message: err.message || 'No se pudo conectar al servidor'
+                        })
+                    });        
+                     
+
+            })
+            .catch( err => {
+                res.status(500).send({ 
                     ok:false,
-                    message:'no se logro acceder a los datos de los productos'
-                });
-                return;
-            }
-    
-            res.json({
-                ok:true,
-                columns_products
-            });
-        })
+                    message: err.message || 'No se pudo conectar al servidor'
+                })
+            });    
 
-    });
+        
+    } catch (err) {
+
+        res.status(400).json({
+            ok:false,
+            message:'no se logro acceder a los datos'
+        });
+       
+    }
+    
+    
 }
 
 export const getTypePrdoduct = ( sku: string ): string  => {
@@ -778,3 +840,13 @@ export const getTypePrdoduct = ( sku: string ): string  => {
     }
 
 } 
+
+export const getpagination =( size: number, page: number)=> {
+
+    const limit = size > 5 ? size : 5;
+    const offset = page > 0 ? page-1 : 0;
+    const next_page = page == 0 ? 1 : page + 1;
+    const prev_page = offset == 0 ? 0 : page-1;
+
+    return { limit, offset, next_page, prev_page };
+}

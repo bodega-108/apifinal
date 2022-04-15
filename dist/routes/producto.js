@@ -29,7 +29,7 @@ router.get('/delete/:id/:nombre', productos_2.eliminarImage);
 router.get('/descargarExcel/:nombre', productos_2.descargarExcel);
 router.get('/generarExcelTotal', productos_1.getProductosExcel);
 router.get('/subcategoria/:categoria', productos_1.getSubcategoria);
-router.get('/columna-productos', productos_2.getColumnsProducts);
+router.get('/columna-productos/:size/:page', productos_2.getColumnsProducts);
 // router.post('/emails',sendEmail);
 exports.default = router;
 //# sourceMappingURL=producto.js.map

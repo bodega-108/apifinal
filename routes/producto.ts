@@ -77,7 +77,7 @@ router.get('/generarExcelTotal',getProductosExcel);
 
 router.get('/subcategoria/:categoria', getSubcategoria);
 
-router.get( '/columna-productos', getColumnsProducts)
+router.get( '/columna-productos/:size/:page', getColumnsProducts)
 
 // router.post('/emails',sendEmail);
 

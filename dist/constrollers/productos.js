@@ -12,12 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTypePrdoduct = exports.getColumnsProducts = exports.getSubcategoria = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
+exports.getpagination = exports.getTypePrdoduct = exports.getColumnsProducts = exports.getSubcategoria = exports.descargarExcel = exports.eliminarImage = exports.saveDataImg = exports.exponerImg = exports.listaDeImagenes = exports.upload = exports.subirImagenes = exports.editarProducto = exports.getProducto = exports.deleteProducto = exports.getAllIdentificador = exports.postKam = exports.postCliente = exports.postCategoria = exports.getIdentificadorCtg = exports.getKams = exports.getCliente = exports.getCategoria = exports.update = exports.saveProductos = exports.getSkusCat = exports.getProductoCat = exports.getSku = exports.getProductosExcel = exports.getProductos = void 0;
 const multer_1 = __importDefault(require("multer"));
 const multer_2 = __importDefault(require("multer"));
 const conexion_1 = __importDefault(require("../db/conexion"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const server_1 = __importDefault(require("../models/server"));
+const connection_1 = __importDefault(require("../db/connection"));
+//import Productos from '../models/product_data'
 // import { transporter } from './emailer';
 /**
  * Libreria para generar Excel
@@ -608,35 +611,77 @@ const getSubcategoria = (req, res) => {
     });
 };
 exports.getSubcategoria = getSubcategoria;
-const getColumnsProducts = (req, res) => {
-    const query = `SELECT p.sku, p.nombre, p.estado, p.codigo_sherpa, p.id_kam, p.id_cliente, p.descripcion FROM producto p`;
-    const query_cliente = `SELECT * FROM cliente`;
-    conexion_1.default.ejecutarQuery(query, [], (err, columns_products) => {
-        conexion_1.default.ejecutarQuery(query_cliente, [], (err, clientes) => {
-            for (let i = 0; i < columns_products.length; i++) {
-                let id_cliente = columns_products[i].id_cliente;
-                for (let j = 0; j < clientes.length; j++) {
-                    if (clientes[j].id == id_cliente) {
-                        columns_products[i].cliente = clientes[j].nombre;
-                    }
+const getColumnsProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let limit = parseInt(req.params.size);
+    let offset = parseInt(req.params.page);
+    const paginate = exports.getpagination(limit, offset);
+    console.log(paginate.limit, paginate.offset);
+    const conexion = new server_1.default();
+    conexion.dbConnect()
+        .then(res => console.log(res));
+    try {
+        const [results, error] = yield connection_1.default.query(`SELECT COUNT(id) as total FROM producto`);
+        //Para guardar el valor del total de registros de productos en un array
+        let total_item;
+        for (let t in results) {
+            total_item = results[t];
+        }
+        let total_page = Math.ceil(total_item.total / paginate.limit);
+        console.log(total_page);
+        connection_1.default.query(`SELECT p.sku, p.nombre, p.estado, p.codigo_sherpa, p.id_kam, p.id_cliente, p.descripcion FROM producto p LIMIT ${paginate.limit} OFFSET ${paginate.offset}`)
+            .then((productos) => __awaiter(void 0, void 0, void 0, function* () {
+            let array_productos;
+            //Guardamos los datos en un array para agregarle los campos de nombre de cliente y type
+            for (let p in productos) {
+                array_productos = productos[p];
+            }
+            connection_1.default.query(`SELECT * FROM cliente`)
+                .then((clientes) => __awaiter(void 0, void 0, void 0, function* () {
+                let array_clientes;
+                //Guardamos todos los clientes en un array para navegar a travez del y poder identificarlo por el id
+                for (let c in clientes) {
+                    array_clientes = clientes[c];
                 }
-                let sku = columns_products[i].sku;
-                columns_products[i].tipo = exports.getTypePrdoduct(sku);
-            }
-            if (err) {
-                res.status(400).json({
-                    ok: false,
-                    message: 'no se logro acceder a los datos de los productos'
+                //Agregamos los campos de nombre de cliente y el tipo a los datos de productos    
+                for (let i = 0; i < array_productos.length; i++) {
+                    let id_cliente = array_productos[i].id_cliente;
+                    for (let j = 0; j < array_clientes.length; j++) {
+                        if (array_clientes[j].id == id_cliente) {
+                            array_productos[i].cliente = array_clientes[j].nombre;
+                        }
+                    }
+                    let sku = array_productos[i].sku;
+                    array_productos[i].tipo = exports.getTypePrdoduct(sku);
+                }
+                res.json({
+                    ok: true,
+                    total_item: total_item.total,
+                    total_page: total_page,
+                    next_page: paginate.next_page,
+                    prev_page: paginate.prev_page,
+                    array_productos
                 });
-                return;
-            }
-            res.json({
-                ok: true,
-                columns_products
+            })).catch(err => {
+                res.status(500).send({
+                    ok: false,
+                    message: err.message || 'No se pudo conectar al servidor'
+                });
+            });
+        }))
+            .catch(err => {
+            res.status(500).send({
+                ok: false,
+                message: err.message || 'No se pudo conectar al servidor'
             });
         });
-    });
-};
+    }
+    catch (err) {
+        res.status(400).json({
+            ok: false,
+            message: 'no se logro acceder a los datos'
+        });
+    }
+});
 exports.getColumnsProducts = getColumnsProducts;
 const getTypePrdoduct = (sku) => {
     let codigo = sku.substring(9);
@@ -648,4 +693,12 @@ const getTypePrdoduct = (sku) => {
     }
 };
 exports.getTypePrdoduct = getTypePrdoduct;
+const getpagination = (size, page) => {
+    const limit = size > 5 ? size : 5;
+    const offset = page > 0 ? page - 1 : 0;
+    const next_page = page == 0 ? 1 : page + 1;
+    const prev_page = offset == 0 ? 0 : page - 1;
+    return { limit, offset, next_page, prev_page };
+};
+exports.getpagination = getpagination;
 //# sourceMappingURL=productos.js.map

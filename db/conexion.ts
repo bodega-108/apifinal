@@ -55,7 +55,7 @@ export default class MySQL{
 
         this.instance.cnn.query(query,[],(err, results : Object[], fields )=>{
             if(err){
-                console.log('Error en Qury');
+                console.log('Error en Query');
                 console.log(err);
                 return callback(err);
             }

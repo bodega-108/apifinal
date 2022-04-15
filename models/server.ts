@@ -37,10 +37,11 @@ export default  class Server{
         try{
            await  db.authenticate();
            console.log('DATABASE ONLINE');
-        }catch(e){
+        }catch( e: any ){
             throw new Error(e);
         }
     }
+    
     middlewares(){
         //CORS middleware
         this.app.use(cors());
@@ -64,7 +65,7 @@ export default  class Server{
     async conexion(){
         try{
             const mysql = new MySQL();
-        }catch(e){
+        }catch(e:any){
             throw new Error(e);
         }
     }
